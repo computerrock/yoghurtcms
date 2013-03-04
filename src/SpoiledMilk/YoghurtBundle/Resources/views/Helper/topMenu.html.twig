@@ -1,0 +1,35 @@
+<div class="navbar navbar-fixed-top">
+    <div class="navbar-inner">
+        <div class="container-fluid">
+            <a class="brand" href="{{ path('yoghurt_index') }}">{{ yoghurt_site_name }}</a>
+            
+            {% if is_granted('ROLE_USER') %}
+            
+                <ul class="nav">
+                    <li class="divider-vertical"></li>
+                    
+                    <li class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            <i class="icon-plus icon-white"></i>
+                            New
+                            <b class="caret"></b>
+                        </a>
+
+                        <ul class="dropdown-menu">
+                            {% for entityType in entityTypes %}
+                                <li>
+                                    <a href="{{ path('yoghurt_entity_new', {'type_id': entityType.id}) }}">{{ entityType.name }}</a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+                </ul>
+
+                <ul class="nav pull-right">
+                    <li><a href="{{path('logout')}}">Logout [ {{ app.user.username }} ]</a></li>
+                </ul>
+            {% endif %}
+            
+        </div>
+    </div>
+</div>

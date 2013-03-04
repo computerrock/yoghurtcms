@@ -1,0 +1,10 @@
+<a{% for attr, value in options %} {{ attr }}="{{ value }}"{% endfor %}>
+    {{ title }}
+    {% if options['class'] is defined %}
+        {% if options['class'] == 'asc' %}
+            <i class="icon-chevron-up"></i>
+        {% elseif options['class'] == 'desc' %}
+            <i class="icon-chevron-down"></i>
+        {% endif %}
+    {% endif %}
+</a>

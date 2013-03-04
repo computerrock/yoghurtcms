@@ -1,0 +1,34 @@
+{% extends 'SpoiledMilkYoghurtBundle::layout.html.twig' %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Publishing</h1>
+</div>
+
+<h4 style="display: inline-block; margin-right: 12px">Last update date time:</h4> 
+<span>
+    {% if lastModified != null %}
+        {{ lastModified | date("M d, Y. H:i:s")}}
+    {% else %}
+        Never
+    {% endif %}
+</span>
+<br/>
+
+<h4 style="display: inline-block; margin-right: 10px">Last publish date time:</h4> 
+<span>
+    {% if publishing.lastPublishDateTime != null %}
+        {{ publishing.lastPublishDateTime | date("M d, Y. H:i:s")}}
+    {% else %}
+        Never
+    {% endif %}
+</span>
+<hr/>
+
+
+<a href="{{ path('yoghurt_index_publish') }}"
+   class="btn btn-primary">
+    Publish now
+</a>
+
+{% endblock %}

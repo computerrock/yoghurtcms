@@ -1,0 +1,36 @@
+{% extends 'SpoiledMilkYoghurtBundle::layout.html.twig' %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Edit user {{ entity.username }}</h1>
+</div>
+
+<div class="container-fluid">
+    <div class="row-fluid">
+
+        <div class="span12">
+            <form action="{{ path('yoghurt_user_update', { 'id': entity.id }) }}" 
+                  method="post" 
+                  {{ form_enctype(edit_form) }}>
+
+                {{ form_row(edit_form.username) }}
+                {{ form_row(edit_form.email) }}
+                {{ form_row(edit_form.role) }}
+                {{ form_row(edit_form.isActive) }}
+                {{ form_row(edit_form.newPassword) }}
+                {{ form_row(edit_form._token) }}
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                    <a class="btn" href="{{ path('yoghurt_user') }}">Cancel</a>
+                    <a class="btn btn-danger" 
+                       href="{{ path('yoghurt_user_delete', { 'id': entity.id }) }}"
+                       onclick="return confirm('This action is immediate and irreversible.\nAre you sure you want to delete this user?')">
+                        Delete
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

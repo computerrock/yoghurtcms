@@ -1,0 +1,37 @@
+services:
+  
+    yoghurt_service:
+        class: SpoiledMilk\YoghurtBundle\Services\YoghurtService
+        arguments: [ "@service_container" ]
+            
+    yoghurt_lifecycle_listener:
+        class: SpoiledMilk\YoghurtBundle\Entity\Listener\YoghurtLifeCycleListener
+        tags:
+            - { name: doctrine.event_listener, event: prePersist, method: prePersist }
+            - { name: doctrine.event_listener, event: preUpdate, method: preUpdate }
+            - { name: doctrine.event_listener, event: onFlush, method: onFlush }
+            
+    # Yoghurt custom fields
+    
+    form.type.spoiledMilkFile:
+        class: SpoiledMilk\YoghurtBundle\Form\Type\SpoiledMilkFileType
+        arguments: 
+            - "@yoghurt_service"
+        tags:
+            - { name: form.type, alias: smfile }
+            
+    form.type.spoiledMilkTerm:
+        class: SpoiledMilk\YoghurtBundle\Form\Type\SpoiledMilkTermType
+        arguments: [ "@doctrine.orm.entity_manager"]
+        tags:
+            - { name: form.type, alias: smterm }
+            
+    form.type.spoiledMilkMapSingle:
+        class: SpoiledMilk\YoghurtBundle\Form\Type\SpoiledMilkMapSingleType
+        tags:
+            - { name: form.type, alias: smMapSingle }
+            
+    form.type.spoiledMilkMapMulti:
+        class: SpoiledMilk\YoghurtBundle\Form\Type\SpoiledMilkMapMultiType
+        tags:
+            - { name: form.type, alias: smMapMulti }

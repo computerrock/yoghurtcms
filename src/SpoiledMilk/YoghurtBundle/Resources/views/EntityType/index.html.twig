@@ -1,0 +1,124 @@
+{% extends 'SpoiledMilkYoghurtBundle::layout.html.twig' %}
+
+{% block title %}
+ :: Entity Types
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>
+        Entity Types
+    
+        <a href="#newTypeModal"
+           data-toggle="modal"
+           class="btn btn-primary"
+           style="margin-left: 15px">
+            <i class="icon-plus icon-white"></i>
+            Create new
+        </a>
+    </h1>
+</div>
+
+{% if types|length > 0 %}
+    <table class="table table-striped table-bordered">
+        <thead style="text-align: center">
+            <tr>
+                <th style="width: 80px"></th>
+                <th>Name</th>
+                <th>Slug</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        
+        <tbody id="entityTableBody">
+        {% for type in types %}
+            <tr id="{{ type.id }}">
+                <td style="text-align: center">
+                    <a href="{{ path('yoghurt_entitytype_order', {'id': type.id, 'direction': 'up'})  }}" class="btn">
+                        <i class="icon-arrow-up"></i>
+                    </a>
+                        
+                    <a href="{{ path('yoghurt_entitytype_order', {'id': type.id, 'direction': 'down'})  }}" class="btn">
+                        <i class="icon-arrow-down"></i>
+                    </a>
+                </td>
+                <td>{{ type.name }}</td>
+                <td>{{ type.slug }}</td>
+                <td>
+                    <a href="{{ path('yoghurt_entitytype_edit', { 'id': type.id }) }}"
+                       class="btn">
+                        <i class="icon-edit"></i>
+                        Edit
+                    </a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <div class="alert-block">
+        There are no entity types defined.
+    </div>
+{% endif %}
+ 
+<div class="modal fade" id="newTypeModal">
+    <form action="{{ path('yoghurt_entitytype_create') }}" method="post" 
+          novalidate="novalidate" class="form-horizontal">
+        
+        <div class="modal-header">
+            <a class="close" data-dismiss="modal">×</a>
+            <h3>New Entity Type</h3>
+        </div>
+        
+        <div class="modal-body">
+            {{ form_row(formNew.name) }}
+            {{ form_row(formNew.namePlural) }}
+            {{ form_row(formNew.slug) }}
+            {{ form_row(formNew._token) }}
+        </div>
+        
+        <div class="modal-footer">
+            <button type="submit" class="btn btn-primary">Create</button>
+        </div>
+    </form>
+</div>
+ 
+<script>
+    $(function() {
+        $("#entityTableBody").sortable();
+        $("#entityTableBody").disableSelection();
+    });
+    
+    var oldPositions = null;
+    var newPositions = null;
+    var loading = '<img src="{{ asset('bundles/spoiledmilkyoghurt/images/loading.gif') }}" style="float: right" />';
+    
+    $('#entityTableBody').sortable({
+        start: function(event, ui) {
+            oldPositions = $(this).sortable('toArray').join(',');
+            orderButtons = $(this).children[0];
+        },
+        update: function(event, ui) {
+            var item = ui.item;
+            var name = item.context.cells[1].innerHTML;
+            var ok = '<i id="ajax-ok-' + item.attr('id') + '" class="icon-ok" style="float: right"></i>';
+            item.context.cells[1].innerHTML = name + loading;
+            newPositions = $(this).sortable('toArray').join(',');
+            
+            $.ajax({
+                url: '{{ path('yoghurt_entitytype_reorder') }}',
+                type: 'POST',
+                data: {
+                    'oldOrder': oldPositions,
+                    'newOrder': newPositions,
+                },
+                complete: function(event) {
+                    setTimeout(function() { item.context.cells[1].innerHTML = name + ok; }, 1000);
+                    setTimeout(function() { $('#ajax-ok-' + item.attr('id')).toggle('highlight', {}, 1000); }, 1700);
+                }
+            });
+        }
+    });
+</script>
+
+{% endblock %}

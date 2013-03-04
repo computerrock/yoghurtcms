@@ -1,0 +1,492 @@
+{% extends 'MopaBootstrapBundle:Form:fields.html.twig' %}
+
+
+
+{% block smfile_widget %}
+    {{ form_widget(form) }}
+    
+    {% if form.vars['data_file'] is defined %}
+        <a href="{{ asset('uploads/' ~ form.vars['data_file']) }}" 
+           target="_blank">
+            <i class="icon-file"></i>
+            Download file
+        </a>
+    {% elseif form.vars['data_img'] is defined %}
+        <a href="{{ asset('uploads/' ~ form.vars['data_img']) }}" target="_blank">
+            <i class="icon-picture"></i>
+            View image
+        </a>
+    {% endif %}
+{% endblock smfile_widget %}  
+
+
+
+{% block smterm_widget %}
+    {{ form_widget(form) }}
+
+    <script type="text/javascript">
+                var orderTags = [
+                    {% for term in form.vars.terms %}
+                        '{{ term.term }}',
+                    {% endfor %}
+                ];
+            
+                function split( val ) {
+                    return val.split( /,\s*/ );
+                }
+                
+                function extractLast( term ) {
+                    return split( term ).pop();
+                }
+            
+                function getUnused(term) {                    
+                    if(term == '')
+                        return orderTags;
+               
+                    used = split(term);
+                    ret = new Array();
+               
+                    for(i = 0; i < orderTags.length; i++) {
+                        
+                        if(used.indexOf(orderTags[i]) >= 0) {
+                            continue;
+                        } else {
+                            ret.push(orderTags[i]);
+                        }
+                    }
+               
+                    if(ret.length == 0)
+                        ret = '';
+                    
+                    return ret;
+                }
+
+                $('#{{ form.vars.id }}')
+                    .bind( "keydown", function( event ) {
+                        if ( event.keyCode === $.ui.keyCode.TAB && $( this ).data( "autocomplete" ).menu.active ) {
+                            event.preventDefault();
+                        }
+                    })
+                    .autocomplete({
+                        minLength: 0,
+                        source: function( request, response ) {
+                            response( $.ui.autocomplete.filter(getUnused(request.term), extractLast(request.term) ) );
+                        },
+                        focus: function() {
+                            // prevent value inserted on focus
+                            return false;
+                        },
+                        select: function( event, ui ) {
+                            var terms = split( this.value );
+                            // remove the current input
+                            terms.pop();
+                            // add the selected item
+                            terms.push( ui.item.value );
+                            // add placeholder to get the comma-and-space at the end
+                            terms.push( "" );
+                            this.value = terms.join( ", " );
+                            return false;
+                        }
+                    });
+    </script>
+{% endblock smterm_widget %}  
+
+ 
+    
+{% block smMapSingle_widget %}
+    
+    {% set attr = attr|merge({'onclick': 'showMap_' ~ id ~ '()'}) %}
+    
+    <input type="text" {{ block('widget_attributes') }}{% if value is defined %} value="{{ value }}"{% endif %} />
+
+    <div class="modal fade" id="gmapModal_{{ id }}" style="display: none">
+        <div class="modal-header">
+            <a class="close" data-dismiss="modal">×</a>
+            <h3>Set location</h3>
+        </div>
+
+        <div class="modal-body">
+            <label for="gmap-address_{{ id }}">Address:</label>
+            <input id="gmap-address_{{ id }}" type="text" value=""/>
+
+            <div id="gmap_{{ id }}" style="width: 100%; height: 300px;"></div>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn btn-primary" onclick="setLocation_{{ id }}(); return false;">OK</button>
+        </div>
+    </div>
+    
+    <script src='http://maps.googleapis.com/maps/api/js?sensor=false' type='text/javascript'></script>
+    <script type="text/javascript">
+        var marker_{{ id }} = null;
+        var dialogId_{{ id }} = 'gmapModal_{{ id }}';
+
+        function showMap_{{ id }}() {
+            $('#' + dialogId_{{ id }}).modal();
+            setTimeout(loadMap_{{ id }}, 1000);
+        }
+        
+        function loadMap_{{ id }}() {
+            var exists = 0, lat, lng;
+
+            try {
+                obj = $.parseJSON($('#{{ id }}').val());
+                $('#gmap-address_{{ id }}').val(obj.geoloc[0].address);
+                lat = obj.geoloc[0].lat != null ? obj.geoloc[0].lat : 46.79253808640554;
+                lng = obj.geoloc[0].lng != null ? obj.geoloc[0].lng : 8.237914484374983;
+                exists = 1;
+
+                if(obj.geoloc[0].lat == null && obj.geoloc[0].lng == null) {
+                    exists = 0;
+                }
+            } catch (err) {
+                $('#gmap-address_{{ id }}').val('');
+                lat = 46.79253808640554;
+                lng = 8.237914484374983;
+            }
+
+            var latlng = new google.maps.LatLng(lat, lng);
+            var mapOpts = {
+                zoom: 4,
+                center: latlng,
+                mapTypeId: google.maps.MapTypeId.ROADMAP,
+                streetViewControl: false,
+                zoomControlOptions: {
+                    position: google.maps.ControlPosition.TOP_LEFT,
+                    style: google.maps.ZoomControlStyle.SMALL
+                }
+            };
+
+            var map = new google.maps.Map(document.getElementById('gmap_{{ id }}'), mapOpts);
+
+            if(exists == 1) {
+                var image = new google.maps.MarkerImage(
+                    '{{ asset('bundles/spoiledmilkyoghurt/images/marker.png') }}',
+                    new google.maps.Size(20,34),
+                    new google.maps.Point(0,0),
+                    new google.maps.Point(10,34)
+                );
+
+                var shadow = new google.maps.MarkerImage(
+                    '{{ asset('bundles/spoiledmilkyoghurt/images/marker-shadow.png') }}',
+                    new google.maps.Size(40,34),
+                    new google.maps.Point(0,0),
+                    new google.maps.Point(10,34)
+                );
+
+                var shape = {
+                    coord: [13,0,15,1,16,2,17,3,18,4,18,5,19,6,19,7,19,8,19,9,19,10,19,11,19,12,19,13,18,14,18,15,17,16,16,17,15,18,14,19,14,20,13,21,13,22,12,23,12,24,12,25,12,26,11,27,11,28,11,29,11,30,11,31,11,32,11,33,8,33,8,32,8,31,8,30,8,29,8,28,8,27,8,26,7,25,7,24,7,23,6,22,6,21,5,20,5,19,4,18,3,17,2,16,1,15,1,14,0,13,0,12,0,11,0,10,0,9,0,8,0,7,0,6,1,5,1,4,2,3,3,2,4,1,6,0,13,0],
+                    type: 'poly'
+                };
+
+                marker_{{ id }} = new google.maps.Marker({
+                    position: latlng,
+                    map: map,
+                    draggable: true,
+                    icon: image,
+                    shadow: shadow,
+                    shape: shape,
+                });
+            }
+
+            // click event
+            google.maps.event.addListener(map, 'click', function(point) {
+                if(exists == 0) {
+                    exists = 1;
+                    
+                    var image = new google.maps.MarkerImage(
+                        '{{ asset('bundles/spoiledmilkyoghurt/images/marker.png') }}',
+                        new google.maps.Size(20,34),
+                        new google.maps.Point(0,0),
+                        new google.maps.Point(10,34)
+                    );
+
+                    var shadow = new google.maps.MarkerImage(
+                        '{{ asset('bundles/spoiledmilkyoghurt/images/marker-shadow.png') }}',
+                        new google.maps.Size(40,34),
+                        new google.maps.Point(0,0),
+                        new google.maps.Point(10,34)
+                    );
+
+                    var shape = {
+                        coord: [13,0,15,1,16,2,17,3,18,4,18,5,19,6,19,7,19,8,19,9,19,10,19,11,19,12,19,13,18,14,18,15,17,16,16,17,15,18,14,19,14,20,13,21,13,22,12,23,12,24,12,25,12,26,11,27,11,28,11,29,11,30,11,31,11,32,11,33,8,33,8,32,8,31,8,30,8,29,8,28,8,27,8,26,7,25,7,24,7,23,6,22,6,21,5,20,5,19,4,18,3,17,2,16,1,15,1,14,0,13,0,12,0,11,0,10,0,9,0,8,0,7,0,6,1,5,1,4,2,3,3,2,4,1,6,0,13,0],
+                        type: 'poly'
+                    };
+
+                    marker_{{ id }} = new google.maps.Marker({
+                        position: point.latLng,
+                        map: map,
+                        draggable: true,
+                        icon: image,
+                        shadow: shadow,
+                        shape: shape,
+                    });
+                } else {
+                    alert('Marker already exists, please drag it to the desired location.')
+                }
+            });
+        }
+
+        function setLocation_{{ id }}() {
+            var addr = $('#gmap-address_{{ id }}').val().trim();
+            
+            if(addr == '' && marker_{{ id }} == null) {
+                alert('To save location you must enter either address or pick a location on the map.');
+            } else {
+                var jsonStr = '{ "geoloc": [{'
+                    + '"lat": ' + (marker_{{ id }} != null ? marker_{{ id }}.getPosition().lat() : null ) + ','
+                    + '"lng": ' + (marker_{{ id }} != null ? marker_{{ id }}.getPosition().lng() : null ) + ','
+                    + '"address": "' + addr + '",'
+                    + '"title": ""'
+                    + '}] }';
+
+                $('#{{ id }}').val(jsonStr);
+                $('#' + dialogId_{{ id }}).modal('hide');
+            }
+        }
+    </script>
+{% endblock smMapSingle_widget %}
+    
+    
+    
+{% block smMapMulti_widget %}
+    {% set attr = attr|merge({'onclick': 'showMapMulti_' ~ id ~ '()'}) %}
+
+    <input type="text" {{ block('widget_attributes') }}{% if value is defined %} value="{{ value }}"{% endif %} />
+
+    <div class="modal fade" id="gmapModal-{{ id }}" style="display: none">
+        <div class="modal-header">
+            <a class="close" data-dismiss="modal">×</a>
+            <h3>Set location</h3>
+        </div>
+
+        <div class="modal-body">
+            <div id="gmap-{{ id }}" style="width: 100%; height: 300px; margin-bottom: 2px"></div>
+
+            <a href="javascript:void(0);" 
+                onclick="addLocationMulti_{{ id }}()">
+                <i class="icon-plus" style="margin-right: 3px"></i>Add location
+            </a>
+
+            <div id="gmap-locations-{{ id }}">
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn btn-primary" onclick="setLocationMulti_{{ id }}(); return false;">OK</button>
+        </div>
+    </div>
+
+    <script src='http://maps.googleapis.com/maps/api/js?sensor=false' type='text/javascript'></script>
+    <script type="text/javascript">
+        var urlFieldId_{{ id }} = '{{ id }}';
+        var startLat_{{ id }} = 46.79253808640554;
+        var startLng_{{ id }} = 8.237914484374983;
+        var dialogId_{{ id }} = 'gmapModal-{{ id }}';
+        var mapId_{{ id }} = 'gmap-{{ id }}';
+        var holderId_{{ id }} = 'gmap-locations-{{ id }}';
+        var map_{{ id }};
+        var markers_{{ id }};
+        var addresses_{{ id }};
+
+        function showMapMulti_{{ id }}() {
+            $('#' + dialogId_{{ id }}).modal();
+            setTimeout(loadMapMulti_{{ id }}, 1000);
+        }
+
+        function loadMapMulti_{{ id }}() {
+            resetFormMulti_{{ id }}();
+
+            try {
+                var obj = $.parseJSON($('#'+urlFieldId_{{ id }}).val());
+
+                if(obj == null) {
+                    addLocationMulti_{{ id }}();
+                    return;
+                } else {
+                    obj = obj.geoloc;
+                }
+
+                for(index in obj) {
+                    index = parseInt(index);
+                    addFieldsetMulti(index);
+
+                    $('#gmap-address-' + index).val(obj[index].address);
+                    $('#gmap-title-' + index).val(obj[index].title);
+                    addMapMarkerMulti(
+                        new google.maps.LatLng(obj[index].lat, obj[index].lng),
+                        index
+                    );
+                }
+            } catch (err) {
+                addLocationMulti_{{ id }}();
+            }
+        }
+
+        function resetFormMulti_{{ id }}() {
+            var latlng = new google.maps.LatLng(startLat_{{ id }}, startLng_{{ id }});
+            var mapOpts = {
+                zoom: 4,
+                center: latlng,
+                mapTypeId: google.maps.MapTypeId.ROADMAP,
+                streetViewControl: false,
+                zoomControlOptions: {
+                    position: google.maps.ControlPosition.TOP_LEFT,
+                    style: google.maps.ZoomControlStyle.SMALL
+                }
+            };
+
+
+            map_{{ id }} = new google.maps.Map(document.getElementById(mapId_{{ id }}), mapOpts);
+
+            for(index in markers_{{ id }})
+                markers_{{ id }}[index].setMap(null);
+
+            $('#' + holderId_{{ id }}).html('');
+            markers_{{ id }} = new Array();
+            addresses_{{ id }} = new Array();
+        }
+
+        function addLocationMulti_{{ id }}() {
+            var index = addresses_{{ id }}.length;
+            addFieldsetMulti(index);
+            addMapMarkerMulti(new google.maps.LatLng(startLat_{{ id }}, startLng_{{ id }}), index);
+        }
+
+        function removeLocationMulti(id) {
+            $('#gmap-location-' + id).remove();
+            var index = addresses_{{ id }}.indexOf(id);
+            addresses_{{ id }}.splice(index,1);
+            markers_{{ id }}[index].setMap(null);
+            markers_{{ id }}.splice(index,1);
+        }
+
+        function addFieldsetMulti(index) {
+            var fieldset = '<div id="gmap-location-{X}">'
+            + '<strong>{Y}.</strong>'
+            + '<input id="gmap-address-{X}" type="text" placeholder="Address" title="Location\'s address" style="margin-left: 5px"  value=""/>'
+            + '<input id="gmap-title-{X}" type="text" placeholder="Title" title="Location\'s title" style="margin-left: 3px" value=""/>'
+            + '<a href="javascript:void(0);" onclick="removeLocationMulti({X})" style="margin-left: 3px"><i class="icon-remove"></i></a>'
+            + '</div>';
+
+            $('#' + holderId_{{ id }}).prepend(fieldset.replace(/{X}/g, index).replace(/{Y}/g, index+1 ));
+            addresses_{{ id }}.push(index);
+        }
+
+        function addMapMarkerMulti(latlng, index) {
+            exists = 1;
+            
+            var image = new google.maps.MarkerImage(
+                '{{ asset('bundles/spoiledmilkyoghurt/images/marker.png') }}',
+                new google.maps.Size(20,34),
+                new google.maps.Point(0,0),
+                new google.maps.Point(10,34)
+            );
+                
+            var shadow = new google.maps.MarkerImage(
+                '{{ asset('bundles/spoiledmilkyoghurt/images/marker-shadow.png') }}',
+                new google.maps.Size(40,34),
+                new google.maps.Point(0,0),
+                new google.maps.Point(10,34)
+            );
+                
+            var shape = {
+                coord: [13,0,15,1,16,2,17,3,18,4,18,5,19,6,19,7,19,8,19,9,19,10,19,11,19,12,19,13,18,14,18,15,17,16,16,17,15,18,14,19,14,20,13,21,13,22,12,23,12,24,12,25,12,26,11,27,11,28,11,29,11,30,11,31,11,32,11,33,8,33,8,32,8,31,8,30,8,29,8,28,8,27,8,26,7,25,7,24,7,23,6,22,6,21,5,20,5,19,4,18,3,17,2,16,1,15,1,14,0,13,0,12,0,11,0,10,0,9,0,8,0,7,0,6,1,5,1,4,2,3,3,2,4,1,6,0,13,0],
+                type: 'poly'
+            };
+            
+            var marker = new google.maps.Marker({
+                position: latlng,
+                map: map_{{ id }},
+                draggable: true,
+                title: 'Location ' + (index+1),
+                icon: image,
+                shadow: shadow,
+                shape: shape,
+            });
+
+            markers_{{ id }}.push(marker);
+        }
+
+        function setLocationMulti_{{ id }}() {
+            var jsonStr = '';
+
+            for(index in addresses_{{ id }}) {
+                if(jsonStr != '')
+                    jsonStr += ', ';
+
+                var addr = $('#gmap-address-' + addresses_{{ id }}[index]).val().trim();
+                var title = $('#gmap-title-' + addresses_{{ id }}[index]).val().trim();
+                var lat = markers_{{ id }}[index].getPosition().lat();
+                var lng = markers_{{ id }}[index].getPosition().lng();
+                jsonStr += '{ "lat": ' + lat + ', "lng": ' + lng + ', "address": "' 
+                    + addr + '", "title": "' + title + '" }';
+            }
+
+            jsonStr = '{ "geoloc": [' + jsonStr + '] }';
+            $('#' + urlFieldId_{{ id }}).val(jsonStr);
+            $('#' + dialogId_{{ id }}).modal('hide');
+        }
+    </script>
+{% endblock smMapMulti_widget %} 
+
+    
+    
+{% block textarea_widget %}
+{% spaceless %}
+    {% set attr = attr %}
+    <textarea {{ block('widget_attributes') }}>{{ value }}</textarea>
+    
+    {% if attr['ckeditor'] is defined %}
+        <script src="{{ asset('bundles/spoiledmilkyoghurt/ckeditor/ckeditor.js') }}"></script>
+        <script type="text/javascript">
+            var items = [
+                ['Cut','Copy','Paste','-','Undo','Redo'],
+                ['Styles','Format','Font','FontSize'],
+                ['TextColor','BGColor'],
+                ['Bold','Italic','Underline','Strike','Subscript','Superscript'],
+                ['Link','Unlink','Anchor' ],
+                ['NumberedList','BulletedList','-','Outdent','Indent','-','JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock'],
+                ['RemoveFormat'],
+                ['Source']
+            ];
+                
+            CKEDITOR.replace('{{ id }}', {
+                toolbar: items
+            });
+        </script>
+    {% endif %}
+{% endspaceless %}
+{% endblock textarea_widget %}
+        
+        
+        
+{% block datetime_widget %}
+    {% if widget == 'single_text' %}
+        {{ block('field_widget') }}
+        <script type="text/javascript">
+            $(function() {
+                $("#{{ id }}").datetimepicker({
+                    dateFormat: 'yy-mm-dd',
+                    timeFormat: 'hh:mm:00',
+                    separator: ' '
+                });
+            });
+        </script>
+    {% else %}
+    <div class="control-group {% if errors|length > 0 %}error{% endif %}">
+    	{{ form_label(form, label) }}
+        <div class="controls">
+            {% set attr = attr|merge({'class': attr.class|default('')}) %}
+	        <div {{ block('widget_container_attributes') }}>
+	            {{ form_errors(form.date) }}
+	            {{ form_errors(form.time) }}
+	            {{ form_widget(form.date, {'attr': {'class': attr.widget_class|default('')}}) }}
+	            {{ form_widget(form.time, {'attr': {'class': attr.widget_class|default('')}}) }}
+	        </div>
+	        {{ block('field_help') }}
+        </div>
+    </div>
+    {% endif %}
+{% endblock datetime_widget %}

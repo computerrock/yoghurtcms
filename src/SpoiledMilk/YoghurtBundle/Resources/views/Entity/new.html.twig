@@ -1,0 +1,45 @@
+{% extends 'SpoiledMilkYoghurtBundle::layout.html.twig' %}
+
+{% block title %}
+ :: New {{ entity.entityType.name }}
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>New {{ entity.entityType.name }}</h1>
+</div>
+
+<form action="{{ path('yoghurt_entity_create', {'type_id': entity.entityType.id}) }}" 
+      method="post" 
+      novalidate="novalidate"
+      {{ form_enctype(form) }}>
+    
+    {{ form_row(form.title) }}
+    {{ form_row(form.slug) }}
+    {{ form_row(form.status) }}
+    {{ form_row(form.position) }}
+    {% if form.terms is defined %}
+        {{ form_row(form.terms) }}
+    {% endif %}
+    {{ form_row(form._token) }}
+    
+    {% if form.fieldValues %}
+        {% for key, fv in form.fieldValues %}
+            {{ form_row(fv) }}
+        {% endfor %}
+    {% endif %}
+    
+    <button type="submit" class="btn btn-primary">Create</button>
+    
+    <button type="submit" onclick="addNext(this.form)" class="btn btn-primary">Create &amp; new</button>
+</form>
+ 
+<script>
+    function addNext(form) {
+        var action = form.getAttribute('action');
+        action += '/true';
+        form.setAttribute('action', action);
+    }
+</script>
+
+{% endblock %}

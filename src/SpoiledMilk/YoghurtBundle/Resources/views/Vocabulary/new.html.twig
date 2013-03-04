@@ -1,0 +1,21 @@
+{% extends 'SpoiledMilkYoghurtBundle::layout.html.twig' %}
+
+{% block title %}
+ :: New Vocabulary
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>New Vocabulary</h1>
+</div>
+
+<form action="{{ path('yoghurt_vocabulary_create') }}" 
+      method="post" 
+      novalidate="novalidate"
+      {{ form_enctype(form) }}>
+    
+    {{ form_widget(form) }}
+    
+    <button type="submit" class="btn btn-primary">Create</button>
+</form>
+{% endblock %}

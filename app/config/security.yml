@@ -1,0 +1,41 @@
+jms_security_extra:
+    secure_all_services: false
+    expressions: true
+
+security:
+    encoders:
+        SpoiledMilk\YoghurtBundle\Entity\User: sha512
+
+    role_hierarchy:
+        ROLE_ADMIN: ROLE_USER
+
+    providers:
+        main:
+            entity:
+                class: SpoiledMilk\YoghurtBundle\Entity\User
+                property: username
+
+    firewalls:
+        secured_area:
+            pattern:    ^/admin
+            anonymous: ~
+            form_login:
+               login_path: /admin/login
+               check_path: /admin/login_check
+               always_use_default_target_path: true
+               default_target_path: /admin
+            logout:
+                path: /admin/logout
+                target: /admin/login
+
+        public_area:
+           pattern: ^/
+           security: false
+
+    access_control:
+        - { path: ^/admin/login$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/admin/entitytype/show, roles: ROLE_USER }
+        - { path: ^/admin/entitytype, roles: ROLE_ADMIN }
+        - { path: ^/admin/user, roles: ROLE_ADMIN }
+        - { path: ^/, roles: ROLE_USER }
+        #- { path: ^/_internal, roles: IS_AUTHENTICATED_ANONYMOUSLY, ip: 127.0.0.1 }

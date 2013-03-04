@@ -1,0 +1,18 @@
+<div class="btn-group">
+    <a class="btn dropdown-toggle {{ buttons[0]['class'] }}"
+        data-toggle="dropdown"
+        href="#"
+        title="{{ buttons[0]['title'] }}">
+            <i class="icon-white {{ buttons[0]['icon'] }}"></i> {{ buttons[0]['text'] }}
+        <span class="caret"></span>
+    </a>
+    <ul class="dropdown-menu">
+        {% for i in 1..2 %}
+            <li>
+                <a href="{{ buttons[i]['href'] }}">
+                    <i class="{{ buttons[i]['icon'] }}"></i> {{ buttons[i]['changeText'] }}
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+</div>

@@ -1,0 +1,34 @@
+{% extends 'SpoiledMilkYoghurtBundle::layout.html.twig' %}
+
+{% block content %}
+    <div class="row login-section">
+        <div class="span3">&nbsp;</div>
+        <div class="span6">
+            <div class="well">
+                <div class="page-header">
+                    <h1>Login</h1>
+                </div>
+
+                {% if error %}
+                <div class="error">{{ error.message }}</div>
+                {% endif %}
+
+                <form action="{{ path("login_check") }}" method="post" id="login">
+                    <div>
+                        <label for="username">Username</label>
+                        <input type="text" id="username" name="_username" value="{{ last_username }}" />
+                    </div>
+
+                    <div>
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="_password" />
+                    </div>
+
+                    <input type="submit" class="btn" value="LOGIN" />
+                </form>
+            </div>
+        </div>
+        <div class="span3">&nbsp;</div>
+    </div>
+{% endblock %}
+

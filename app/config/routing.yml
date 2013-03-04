@@ -1,0 +1,19 @@
+
+SpoiledMilkYoghurtBundle_index:
+    pattern: /admin/
+    defaults: { _controller: "SpoiledMilkYoghurtBundle:Index:index" }
+
+SpoiledMilkYoghurtBundle:
+    resource: "@SpoiledMilkYoghurtBundle/Controller"
+    type: annotation
+    prefix: /admin
+
+# Internal routing configuration to handle ESI
+#_internal:
+#    resource: "@FrameworkBundle/Resources/config/routing/internal.xml"
+#    prefix:   /_internal
+
+logout:
+    pattern:   /admin/logout
+login_check:
+    pattern:   /admin/login_check

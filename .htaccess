@@ -1,0 +1,10 @@
+<IfModule mod_rewrite.c>
+    Options +FollowSymlinks
+    RewriteEngine On
+
+    RewriteCond %{REQUEST_URI} !web
+    RewriteRule ^(.*)$ web/$1
+
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^(.*)$ web/app_dev.php [QSA,L]
+</IfModule>

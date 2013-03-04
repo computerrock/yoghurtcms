@@ -1,0 +1,78 @@
+{% extends 'SpoiledMilkYoghurtBundle::layout.html.twig' %}
+
+{% block content %}
+<div class="page-header">
+    <h1>
+        User list
+    
+        <a href="#newUserModal" class="btn btn-primary" data-toggle="modal" style="margin-left: 15px">
+            <i class="icon-plus icon-white"></i>
+            Create new
+        </a>
+    </h1>
+</div>
+
+<table class="table table-striped table-bordered">
+    <thead>
+        <tr>
+            <th>Username</th>
+            <th>Role</th>
+            <th>Active</th>
+            <th>Email</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for entity in entities %}
+        <tr>
+            <td>{{ entity.username }}</td>
+            <td>
+                {% if entity.role == 'ROLE_ADMIN' %}
+                    Administrator
+                {% elseif entity.role == 'ROLE_USER' %}
+                    User
+                {% endif %}
+            </td>
+            <td>
+                {% if entity.isActive %}
+                    <span class="label label-info">Active</span>
+                {% else %}
+                    <span class="label label-warning">Inactive</span>
+                {% endif %}
+            </td>
+            <td>{{ entity.email }}</td>
+            <td>
+                <a href="{{ path('yoghurt_user_edit', { 'id': entity.id }) }}" class="btn">
+                    <i class="icon-pencil"></i>
+                    Edit
+                </a>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<div id="newUserModal" class="modal fade">
+    <form action="{{ path('yoghurt_user_create') }}"
+          class="form-horizontal"
+          method="post">
+        
+        <div class="modal-header">
+            <a class="close" data-dismiss="modal">×</a>
+            <h3>New User</h3>
+        </div>
+            
+        <div class="modal-body">
+            {{ form_row(userForm.username) }}
+            {{ form_row(userForm.email) }}
+            {{ form_row(userForm.password) }}
+            {{ form_row(userForm.role) }}
+            {{ form_row(userForm._token) }}
+        </div>
+        
+        <div class="modal-footer">
+            <button type="submit" class="btn btn-primary">Create</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

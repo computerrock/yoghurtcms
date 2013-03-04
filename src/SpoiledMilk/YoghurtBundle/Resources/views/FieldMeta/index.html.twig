@@ -1,0 +1,89 @@
+{% extends 'SpoiledMilkYoghurtBundle::layout.html.twig' %}
+
+{% block title %}
+ :: Field settings
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>{{ field.name }} settings</h1>
+</div>
+
+<table class="table table-striped table-bordered">
+    <thead>
+        <tr>
+            <th style="width: 50px">Setting name</th>
+            <th style="width: 300px">Setting value</th>
+            <th style="width: 50px">Actions</th>
+        </tr>
+    </thead>
+    
+    <tbody>
+    {% for key, entity in fieldMeta %}
+        <tr>            
+            <form action="{{ path('yoghurt_fieldmeta_update', {'field_id': field.id, 'meta_id': entity.id}) }}" method="post">
+            <td>
+                {{ form_widget(editForms[key].metaKey) }}
+            </td>
+            
+            <td>
+                {{ form_widget(editForms[key].metaValue) }}
+                {{ form_row(editForms[key]._token) }}
+            </td>
+            
+            <td>
+                <button type="submit" class="btn btn-primary">Save</button>
+                </form>
+                <form action="{{ path('yoghurt_fieldmeta_delete', {'field_id': field.id, 'meta_id': entity.id}) }}"
+                      method="post"
+                      style="display: inline">
+                    {{ form_widget(deleteForms[key]._token) }}
+                    <button type="submit" 
+                            class="btn btn-danger"
+                            onclick="return confirm('Are you shure?')">
+                        Delete
+                    </button>
+                </form>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<a href="{{ path('yoghurt_entitytype_edit', {'id': field.entityType.id}) }}"
+   class="btn">
+    <i class="icon-backward"></i>
+    Back to {{ field.entityType.name }} type
+</a>
+
+<a href="#newMetaModal"
+   data-toggle="modal"
+   class="btn btn-primary">
+    
+    <i class="icon-plus icon-white"></i>
+    Add a setting
+</a>
+
+<div class="modal fade" id="newMetaModal">
+    <form action="{{ path('yoghurt_fieldmeta_create', {'field_id': field.id}) }}" 
+          method="post" 
+          novalidate="novalidate" 
+          class="form-horizontal">
+        
+        <div class="modal-header">
+            <a class="close" data-dismiss="modal">×</a>
+            <h3>New Field Setting</h3>
+        </div>
+        
+        <div class="modal-body">
+            {{ form_row(formNew.metaKey) }}
+            {{ form_row(formNew.metaValue) }}
+            {{ form_row(formNew._token) }}
+        </div>
+        
+        <div class="modal-footer">
+            <button type="submit" class="btn btn-primary">Create</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

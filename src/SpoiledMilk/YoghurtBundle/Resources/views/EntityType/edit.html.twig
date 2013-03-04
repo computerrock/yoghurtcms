@@ -1,0 +1,185 @@
+{% extends 'SpoiledMilkYoghurtBundle::layout.html.twig' %}
+
+{% block title %}
+ :: {{ entityType.name }} Entity Type
+{% endblock %}
+ 
+{% block content %}
+ 
+<div class="page-header">
+    <h1>Entity Type<small> | {{ entityType.name }}</small></h1>
+</div>
+ 
+<div class="container-fluid">
+    <div class="row-fluid">
+        
+        <div class="span12">
+            <form action="{{ path('yoghurt_entitytype_update', { 'id': entityType.id }) }}" 
+                  method="post" 
+                  novalidate="novalidate"
+                  {{ form_enctype(edit_form) }}>
+                
+                {{ form_row(edit_form.name) }}
+                {{ form_row(edit_form.namePlural) }}
+                {{ form_row(edit_form.slug) }}
+                
+                <div>
+                    <h3>
+                        Vocabularies
+                        <small>
+                            <a href="#addVocabularyModal" data-toggle="modal">
+                                <i class="icon-plus"></i> Add vocabulary
+                            </a>
+                        </small>
+                    </h3>
+                        
+                    {% if entityType.entityTypeVocabularies|length > 0 %}
+                        <table class="table">
+                            <thead>
+                                <th>Vocabulary</th>
+                                <th>Mandatory use</th>
+                                <th>&nbsp;</th>
+                            </thead>
+                            <tbody>
+                                {% for key, etv in entityType.entityTypeVocabularies %}
+                                    <tr>
+                                        <td>
+                                            {{ form_widget(edit_form.entityTypeVocabularies[key].vocabulary) }}
+                                            <span class="hidden">
+                                                {{ form_widget(edit_form.entityTypeVocabularies[key].entityType) }}
+                                            </span>
+                                        </td>
+                                        <td>{{ form_widget(edit_form.entityTypeVocabularies[key].mandatory) }}</td>
+                                        <td>
+                                            <a href="{{ path('yoghurt_entitytype_deletevocabulary', {'entityTypeId': entityType.id, 'etvId': etv.id}) }}" 
+                                               class="btn btn-danger"
+                                               onclick="return confirm('All terms from this Vocabulary will be remowed from Entities. Are you shure?');">
+                                                Remove
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    {% else %}
+                        <p>No vocabulary is attached to this entity type</p>
+                    {% endif %}
+                </div>
+                
+                <div class="span12">
+                    <div class="well">
+                        
+                        <div class="row-fluid">
+                            <h3>
+                                Fields
+                                <small>
+                                    <a href="#addFieldModal" data-toggle="modal">
+                                        <i class="icon-plus"></i> Add field
+                                    </a>
+                                </small>
+                            </h3>
+                        </div>
+                        
+                        {% set odd = true %}
+                        {% set even = false %}
+
+                        {% for key, field in entityType.fields %}
+                            {% if odd %}
+                                <div class="row-fluid" {% if not loop.last %}style="margin-bottom: 35px;"{% endif %}>
+                                {% set odd = false %}
+                            {% else %}
+                                {% set odd = true %}
+                            {% endif %}
+
+                            <div class="span6">
+                                {{ form_row(edit_form.fields[key]) }}
+
+                                <a href="{{ path('yoghurt_fieldmeta', {'field_id': field.id}) }}"
+                                class="btn">
+                                    Field settings
+                                </a>
+
+                                <a href="{{ path('yoghurt_entitytype_deletefield', {'entity_type_id': entityType.id, 'field_id': field.id}) }}" 
+                                class="btn btn-danger"
+                                onclick="return confirm('This action is immediate, and all data from this field will be lost.\nAre you shure?');">
+                                    Delete field
+                                </a>
+                            </div>
+
+                            {% if even or loop.last %}
+                                </div>
+                                {% set even = false %}
+                            {% else %}
+                                {% set even = true %}
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                {{ form_row(edit_form._token) }}
+                <div style="clear:both;"></div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                    <a class="btn" href="{{ path('yoghurt_entitytype') }}">Cancel</a>
+                    <a class="btn btn-danger" 
+                       onclick="return confirm('This action is immediate, and all data in this entity type will be lost.\nAre you sure?')" 
+                       href="{{ path('yoghurt_entitytype_delete', {'id': entityType.id}) }}">
+                        Delete
+                    </a>
+                </div>
+            </form>
+        </div>
+        
+    </div>
+</div>
+ 
+<div class="modal fade" id="addFieldModal">
+    <form action="{{ path('yoghurt_entitytype_addfield', {'id': entityType.id}) }}"
+          novalidate="novalidate"
+          method="post"
+          class="form-horizontal">
+        
+        <div class="modal-header">
+            <a class="close" data-dismiss="modal">×</a>
+            <h3>New field</h3>
+        </div>
+        
+        <div class="modal-body">
+            {{ form_widget(field_form) }}
+        </div>
+        
+        <div class="modal-footer">
+            <button type="submit" class="btn btn-primary">Create</button>
+        </div>
+    </form>
+</div>
+ 
+<div id="addVocabularyModal" class="modal fade">
+    <form action="{{ path('yoghurt_entitytype_addvocabulary', {'id': entityType.id}) }}" 
+          method="post"
+          class="form-horizontal"
+          novalidate="novalidate">
+        
+        <div class="modal-header">
+            <a class="close" data-dismiss="modal">×</a>
+            <h3>Add vocabulary</h3>
+        </div>
+        
+        <div class="modal-body">
+            {{ form_row(vocabulary_form.vocabulary) }}
+            {{ form_row(vocabulary_form.mandatory) }}
+            {{ form_row(vocabulary_form._token) }}
+            <div class="hidden">
+                {{ form_row(vocabulary_form.entityType) }}
+            </div>
+                
+        </div>
+        
+        <div class="modal-footer">
+            <button type="submit" class="btn btn-primary">Add</button>
+        </div>
+    </form>
+</div>
+
+{% endblock %}
