@@ -2,7 +2,6 @@
 
 namespace SpoiledMilk\YoghurtBundle\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -241,6 +240,7 @@ class EntityTypeController extends DefaultController {
 
         if ($form->isValid()) {
             $em->persist($field);
+            $this->addFieldToEntities($field, $entityType);
             $em->flush();
             $this->getRequest()->getSession()->setFlash('success', 'Field successfully added.');
         } else {
@@ -436,6 +436,32 @@ class EntityTypeController extends DefaultController {
         $ret['limit'] = $limit;
 
         return $ret;
+    }
+    
+    /**
+     * Adds the given field to all entities of the given entity type. Note that 
+     * this method does not flush changes to database
+     * 
+     * @param \SpoiledMilk\YoghurtBundle\Entity\Field $field
+     * @param \SpoiledMilk\YoghurtBundle\Entity\EntityType $entityType
+     */
+    private function addFieldToEntities(Field $field, EntityType $entityType) {
+        $em = $this->getDoctrine()->getEntityManager();
+        
+        foreach ($entityType->getEntities() as $entity) {
+            $className = 'SpoiledMilk\YoghurtBundle\Entity\\' . $field->getFieldType()->getClassName();
+            $fieldValue = new $className;
+
+            $fieldValue->setEntity($entity);
+            $fieldValue->setField($field);
+            $fieldValue->setPosition(1000 * $field->getPosition() + $entity->countFieldValues() + 1);
+
+            if ($fieldValue instanceof Entity\FileValue)
+                $this->checkPrefix($fieldValue);
+
+            $entity->addFieldValue($fieldValue);
+            $em->persist($fieldValue);
+        }
     }
 
 }
