@@ -92,7 +92,7 @@
                             {% endif %}
 
                             <div class="span6">
-                                {{ form_row(edit_form.fields[key]) }}
+                                {{ form_widget(edit_form.fields[key]) }}
 
                                 <a href="{{ path('yoghurt_fieldmeta', {'field_id': field.id}) }}"
                                 class="btn">
