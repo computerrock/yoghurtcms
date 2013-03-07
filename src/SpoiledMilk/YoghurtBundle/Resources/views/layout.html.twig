@@ -29,7 +29,7 @@
     
     <body>
         
-        {% render 'SpoiledMilkYoghurtBundle:Helper:topMenu' %}
+        {{ render(controller('SpoiledMilkYoghurtBundle:Helper:topMenu')) }}
             
         <div class="container-fluid">
             {% for key, flash in app.session.getFlashes() %}
@@ -44,7 +44,7 @@
             <div class="row-fluid">
                 <div class="span2">
                     {% if is_granted('ROLE_USER') %}
-                        {% render 'SpoiledMilkYoghurtBundle:Helper:leftMenu' %}
+                        {{ render(controller('SpoiledMilkYoghurtBundle:Helper:leftMenu')) }}
                     {% endif %}
                 </div>
                     
