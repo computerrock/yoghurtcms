@@ -64,10 +64,10 @@
                                            onchange="toggleAll(this.form)"/>
                                 </th>
                                 <th style="width: 80px;"></th>
-                                <th style="width: 70px">{{ pagination.sortable('Position', 'e.position')|raw }}</th>
-                                <th style="">{{ pagination.sortable('Title', 'e.title')|raw }}</th>
-                                <th>{{ pagination.sortable('Slug', 'e.slug')|raw }}</th>
-                                <th style="width: 100px">{{ pagination.sortable('Status', 'e.status')|raw }}</th>
+                                <th style="width: 70px">{{ knp_pagination_sortable(pagination, 'Position', 'e.position')|raw }}</th>
+                                <th style="">{{ knp_pagination_sortable(pagination, 'Title', 'e.title')|raw }}</th>
+                                <th>{{ knp_pagination_sortable(pagination, 'Slug', 'e.slug')|raw }}</th>
+                                <th style="width: 100px">{{ knp_pagination_sortable(pagination, 'Status', 'e.status')|raw }}</th>
                                 <th style="width: 145px">Actions</th>
                             </tr>
                         </thead>
@@ -106,7 +106,7 @@
                                 </td>
                                 
                                 <td>
-                                    {% render "SpoiledMilkYoghurtBundle:Helper:statusButton" with { 'entity': entity } %}
+                                    {{ render(controller("SpoiledMilkYoghurtBundle:Helper:statusButton", {'entity': entity })) }}
                                 </td>
 
                                 <td style="text-align: center; vertical-align: middle;">
@@ -128,7 +128,7 @@
                     </table>
                     
                     <div>
-                        {{ pagination.render()|raw }}
+                        {{ knp_pagination_render(pagination)|raw }}
                     </div>
                 </form>
             {% else %}
