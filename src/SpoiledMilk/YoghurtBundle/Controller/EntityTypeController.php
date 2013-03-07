@@ -65,7 +65,7 @@ class EntityTypeController extends DefaultController {
         $form->bindRequest($request);
 
         if ($form->isValid()) {
-            $em = $this->getDoctrine()->getEntityManager();
+            $em = $this->getDoctrine()->getManager();
             $em->persist($entityType);
             $em->flush();
 
@@ -85,7 +85,7 @@ class EntityTypeController extends DefaultController {
      * @Template()
      */
     public function editAction($id) {
-        $em = $this->getDoctrine()->getEntityManager();
+        $em = $this->getDoctrine()->getManager();
 
         $entityType = $em->getRepository('SpoiledMilkYoghurtBundle:EntityType')->find($id);
 
@@ -114,7 +114,7 @@ class EntityTypeController extends DefaultController {
      * @Template("SpoiledMilkYoghurtBundle:EntityType:edit.html.twig")
      */
     public function updateAction($id) {
-        $em = $this->getDoctrine()->getEntityManager();
+        $em = $this->getDoctrine()->getManager();
 
         $entityType = $em->getRepository('SpoiledMilkYoghurtBundle:EntityType')->find($id);
 
@@ -154,7 +154,7 @@ class EntityTypeController extends DefaultController {
      * @Route("/delete/{id}", name="yoghurt_entitytype_delete")
      */
     public function deleteAction($id) {
-        $em = $this->getDoctrine()->getEntityManager();
+        $em = $this->getDoctrine()->getManager();
         $entity = $em->getRepository('SpoiledMilkYoghurtBundle:EntityType')->find($id);
 
         if (!$entity) {
@@ -176,7 +176,7 @@ class EntityTypeController extends DefaultController {
         $changed = $this->swapPositions($types, $id, $direction);
 
         if ($changed) {
-            $em = $this->getDoctrine()->getEntityManager();
+            $em = $this->getDoctrine()->getManager();
 
             foreach ($changed as $value) {
                 $em->persist($value);
@@ -199,7 +199,7 @@ class EntityTypeController extends DefaultController {
         $newOrder = $this->getRequest()->get('newOrder');
         $newOrder = explode(',', $newOrder);
         
-        $em = $this->getDoctrine()->getEntityManager();
+        $em = $this->getDoctrine()->getManager();
         $repo = $em->getRepository('SpoiledMilkYoghurtBundle:EntityType');
         
         for ($i = 0; $i < count($oldOrder); $i++) {
@@ -226,7 +226,7 @@ class EntityTypeController extends DefaultController {
      * @Method("post")
      */
     public function addFieldAction($id) {
-        $em = $this->getDoctrine()->getEntityManager();
+        $em = $this->getDoctrine()->getManager();
         $entityType = $em->getRepository('SpoiledMilkYoghurtBundle:EntityType')->find($id);
 
         if (!$entityType) {
@@ -254,7 +254,7 @@ class EntityTypeController extends DefaultController {
      * @Route("/field/delete/{entity_type_id}/{field_id}", name="yoghurt_entitytype_deletefield")
      */
     public function deleteFieldAction($entity_type_id, $field_id) {
-        $em = $this->getDoctrine()->getEntityManager();
+        $em = $this->getDoctrine()->getManager();
         $entityType = $em->getRepository('SpoiledMilkYoghurtBundle:EntityType')->find($entity_type_id);
 
         if (!$entityType) {
@@ -279,7 +279,7 @@ class EntityTypeController extends DefaultController {
      * @Method("post")
      */
     public function addVocabularyAction($id) {
-        $em = $this->getDoctrine()->getEntityManager();
+        $em = $this->getDoctrine()->getManager();
         $entityType = $em->getRepository('SpoiledMilkYoghurtBundle:EntityType')->find($id);
 
         if (!$entityType) {
@@ -311,7 +311,7 @@ class EntityTypeController extends DefaultController {
      * @Route("/vocabulary/delete/{entityTypeId}/{etvId}", name="yoghurt_entitytype_deletevocabulary") 
      */
     public function deleteVocabularyAction($entityTypeId, $etvId) {
-        $em = $this->getDoctrine()->getEntityManager();
+        $em = $this->getDoctrine()->getManager();
 
         $entityType = $em->getRepository('SpoiledMilkYoghurtBundle:EntityType')->find($entityTypeId);
 
@@ -354,7 +354,7 @@ class EntityTypeController extends DefaultController {
      * @Template()
      */
     public function showAction($id, $page) {
-        $em = $this->getDoctrine()->getEntityManager();
+        $em = $this->getDoctrine()->getManager();
 
         $entityType = $em->getRepository('SpoiledMilkYoghurtBundle:EntityType')
                 ->find($id);
@@ -446,7 +446,7 @@ class EntityTypeController extends DefaultController {
      * @param \SpoiledMilk\YoghurtBundle\Entity\EntityType $entityType
      */
     private function addFieldToEntities(Field $field, EntityType $entityType) {
-        $em = $this->getDoctrine()->getEntityManager();
+        $em = $this->getDoctrine()->getManager();
         
         foreach ($entityType->getEntities() as $entity) {
             $className = 'SpoiledMilk\YoghurtBundle\Entity\\' . $field->getFieldType()->getClassName();

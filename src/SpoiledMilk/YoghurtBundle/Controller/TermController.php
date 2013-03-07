@@ -22,7 +22,7 @@ class TermController extends DefaultController {
     * @Template()
     */
     public function editAction($termId) {
-        $em = $this->getDoctrine()->getEntityManager();
+        $em = $this->getDoctrine()->getManager();
 
         $term = $em->getRepository('SpoiledMilkYoghurtBundle:Term')->find($termId);
 
@@ -53,7 +53,7 @@ class TermController extends DefaultController {
      * @Template("SpoiledMilkYoghurtBundle:Term:edit.html.twig")
      */
     public function updateAction($id) {
-        $em = $this->getDoctrine()->getEntityManager();
+        $em = $this->getDoctrine()->getManager();
 
         $term = $em->getRepository('SpoiledMilkYoghurtBundle:Term')->find($id);
 

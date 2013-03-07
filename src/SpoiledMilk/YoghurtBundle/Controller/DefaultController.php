@@ -86,7 +86,7 @@ class DefaultController extends Controller {
         
         $dqlSubquery .= ' and et.id = ' . $entity->getEntityType()->getId();
         $dql = "select e1 from SpoiledMilkYoghurtBundle:Entity e1 where e1.position = ($dqlSubquery)";
-        $em = $this->getDoctrine()->getEntityManager();
+        $em = $this->getDoctrine()->getManager();
 
         try {
             $otherEntity = $em->createQuery($dql)->getSingleResult();
@@ -113,19 +113,19 @@ class DefaultController extends Controller {
         try {
             if ($entityType instanceof \SpoiledMilk\YoghurtBundle\Entity\EntityType) {
                 $dql .= ' where et.id = :etid';
-                $res = $this->getDoctrine()->getEntityManager()
+                $res = $this->getDoctrine()->getManager()
                         ->createQuery($dql)
                         ->setParameter('etid', $entityType->getId())
                         ->getSingleScalarResult();
             } else if (is_numeric($entityType)) {
                 $dql .= ' where et.id = :etid';
-                $res = $this->getDoctrine()->getEntityManager()
+                $res = $this->getDoctrine()->getManager()
                         ->createQuery($dql)
                         ->setParameter('etid', $entityType)
                         ->getSingleScalarResult();
             } else {
                 $dql .= ' where et.slug = :slug';
-                $res = $this->getDoctrine()->getEntityManager()
+                $res = $this->getDoctrine()->getManager()
                         ->createQuery($dql)
                         ->setParameter('slug', $entityType)
                         ->getSingleScalarResult();

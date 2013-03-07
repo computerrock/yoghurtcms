@@ -27,7 +27,7 @@ class VocabularyController extends DefaultController {
      * @Template()
      */
     public function indexAction() {
-        $em = $this->getDoctrine()->getEntityManager();
+        $em = $this->getDoctrine()->getManager();
         $entities = $em->getRepository('SpoiledMilkYoghurtBundle:Vocabulary')->findAll();
         $formNew = $this->createForm(new VocabularyType(), new Vocabulary());
 
@@ -67,7 +67,7 @@ class VocabularyController extends DefaultController {
         $form->bindRequest($request);
 
         if ($form->isValid()) {
-            $em = $this->getDoctrine()->getEntityManager();
+            $em = $this->getDoctrine()->getManager();
             $em->persist($entity);
             $em->flush();
 
@@ -90,7 +90,7 @@ class VocabularyController extends DefaultController {
      * @Template()
      */
     public function editAction($id) {
-        $em = $this->getDoctrine()->getEntityManager();
+        $em = $this->getDoctrine()->getManager();
 
         $entity = $em->getRepository('SpoiledMilkYoghurtBundle:Vocabulary')->find($id);
 
@@ -130,7 +130,7 @@ class VocabularyController extends DefaultController {
      * @Template("SpoiledMilkYoghurtBundle:Vocabulary:edit.html.twig")
      */
     public function updateAction($id) {
-        $em = $this->getDoctrine()->getEntityManager();
+        $em = $this->getDoctrine()->getManager();
 
         $entity = $em->getRepository('SpoiledMilkYoghurtBundle:Vocabulary')->find($id);
 
@@ -192,7 +192,7 @@ class VocabularyController extends DefaultController {
         $form->bindRequest($request);
 
         if ($form->isValid()) {
-            $em = $this->getDoctrine()->getEntityManager();
+            $em = $this->getDoctrine()->getManager();
             $entity = $em->getRepository('SpoiledMilkYoghurtBundle:Vocabulary')->find($id);
 
             if (!$entity) {
@@ -212,7 +212,7 @@ class VocabularyController extends DefaultController {
      * @Method("post")
      */
     public function addTermAction($id) {
-        $em = $this->getDoctrine()->getEntityManager();
+        $em = $this->getDoctrine()->getManager();
         $vocabulary = $em->getRepository('SpoiledMilkYoghurtBundle:Vocabulary')->find($id);
 
         if (!$vocabulary) {
@@ -239,7 +239,7 @@ class VocabularyController extends DefaultController {
      * @Route("/{vocabularyId}/removeterm/{termId}", name="yoghurt_vocabulary_removeterm")
      */
     public function removeTermAction($vocabularyId, $termId) {
-        $em = $this->getDoctrine()->getEntityManager();
+        $em = $this->getDoctrine()->getManager();
         $vocabulary = $em->getRepository('SpoiledMilkYoghurtBundle:Vocabulary')->find($vocabularyId);
 
         if (!$vocabulary) {
@@ -263,7 +263,7 @@ class VocabularyController extends DefaultController {
      * @Method("post")
      */
     public function addEntityTypeAction($id) {
-        $em = $this->getDoctrine()->getEntityManager();
+        $em = $this->getDoctrine()->getManager();
         $vocabulary = $em->getRepository('SpoiledMilkYoghurtBundle:Vocabulary')->find($id);
 
         if (!$vocabulary) {
@@ -295,7 +295,7 @@ class VocabularyController extends DefaultController {
      * @Route("/{vocabularyId}/entityType/remove/{etvId}", name="yoghurt_vocabulary_removeEntityType") 
      */
     public function removeEntityTypeAction($vocabularyId, $etvId) {
-        $em = $this->getDoctrine()->getEntityManager();
+        $em = $this->getDoctrine()->getManager();
         
         $vocabulary = $em->getRepository('SpoiledMilkYoghurtBundle:Vocabulary')->find($vocabularyId);
 
@@ -336,7 +336,7 @@ class VocabularyController extends DefaultController {
      * @Template()
      */
     public function editTermAction($vocabularyId, $termId) {
-        $em = $this->getDoctrine()->getEntityManager();
+        $em = $this->getDoctrine()->getManager();
 
         $term = $em->getRepository('SpoiledMilkYoghurtBundle:Term')->find($termId);
 

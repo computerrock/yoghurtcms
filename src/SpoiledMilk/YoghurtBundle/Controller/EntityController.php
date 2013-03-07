@@ -23,7 +23,7 @@ class EntityController extends DefaultController {
      * @Template()
      */
     public function newAction($type_id) {
-        $em = $this->getDoctrine()->getEntityManager();
+        $em = $this->getDoctrine()->getManager();
         $entityType = $em->getRepository('SpoiledMilkYoghurtBundle:EntityType')->find($type_id);
 
         if (!$entityType) {
@@ -54,7 +54,7 @@ class EntityController extends DefaultController {
      * @Template("SpoiledMilkYoghurtBundle:Entity:new.html.twig")
      */
     public function createAction($type_id, $next) {
-        $em = $this->getDoctrine()->getEntityManager();
+        $em = $this->getDoctrine()->getManager();
         $entityType = $em->getRepository('SpoiledMilkYoghurtBundle:EntityType')->find($type_id);
 
         if (!$entityType) {
@@ -78,7 +78,7 @@ class EntityController extends DefaultController {
             if (!$entity->getSlug()) {
                 $slug = UtilityService::slugify($entity->getTitle());
                 $dql = 'select e from SpoiledMilkYoghurtBundle:Entity e where e.slug like :slug';
-                $query = $this->getDoctrine()->getEntityManager()
+                $query = $this->getDoctrine()->getManager()
                                 ->createQuery($dql)->setParameter('slug', $slug . '%');
                 $count = sizeof($query->getResult());
                 $entity->setSlug($slug . ($count ? '-' . ++$count : ''));
@@ -118,7 +118,7 @@ class EntityController extends DefaultController {
      * @Template()
      */
     public function editAction($id) {
-        $em = $this->getDoctrine()->getEntityManager();
+        $em = $this->getDoctrine()->getManager();
 
         $entity = $em->getRepository('SpoiledMilkYoghurtBundle:Entity')->find($id);
 
@@ -150,7 +150,7 @@ class EntityController extends DefaultController {
      * @Template("SpoiledMilkYoghurtBundle:Entity:edit.html.twig")
      */
     public function updateAction($id) {
-        $em = $this->getDoctrine()->getEntityManager();
+        $em = $this->getDoctrine()->getManager();
         $entity = $em->getRepository('SpoiledMilkYoghurtBundle:Entity')->find($id);
 
         if (!$entity) {
@@ -174,7 +174,7 @@ class EntityController extends DefaultController {
             if (!$entity->getSlug()) {
                 $slug = UtilityService::slugify($entity->getTitle());
                 $dql = 'select e from SpoiledMilkYoghurtBundle:Entity e where e.slug = :slug';
-                $query = $this->getDoctrine()->getEntityManager()
+                $query = $this->getDoctrine()->getManager()
                                 ->createQuery($dql)->setParameter('slug', $slug);
                 $count = sizeof($query->getResult());
                 $entity->setSlug($slug . ($count ? '-' . ++$count : '') );
@@ -212,7 +212,7 @@ class EntityController extends DefaultController {
      * @Route("/{id}/delete", name="yoghurt_entity_delete")
      */
     public function deleteAction($id) {
-        $em = $this->getDoctrine()->getEntityManager();
+        $em = $this->getDoctrine()->getManager();
         $entity = $em->getRepository('SpoiledMilkYoghurtBundle:Entity')->find($id);
 
         if (!$entity) {
@@ -229,7 +229,7 @@ class EntityController extends DefaultController {
      * @Route("/order/{id}/{direction}", name="yoghurt_entity_order")
      */
     public function orderEntityAction($id, $direction) {
-        $em = $this->getDoctrine()->getEntityManager();
+        $em = $this->getDoctrine()->getManager();
         $repo = $em->getRepository('SpoiledMilkYoghurtBundle:Entity');
         $entity = $repo->find($id);
 
@@ -275,7 +275,7 @@ class EntityController extends DefaultController {
         $newOrder = $this->getRequest()->get('newOrder');
         $newOrder = explode(',', $newOrder);
         
-        $em = $this->getDoctrine()->getEntityManager();
+        $em = $this->getDoctrine()->getManager();
         $repo = $em->getRepository('SpoiledMilkYoghurtBundle:Entity');
         
         for ($i = 0; $i < count($oldOrder); $i++) {
@@ -301,7 +301,7 @@ class EntityController extends DefaultController {
      * @Method("post")
      */
     public function addFieldValueAction($entityId, $fieldId) {
-        $em = $this->getDoctrine()->getEntityManager();
+        $em = $this->getDoctrine()->getManager();
         $entity = $em->getRepository('SpoiledMilkYoghurtBundle:Entity')->find($entityId);
 
         if (!$entity) {
@@ -348,7 +348,7 @@ class EntityController extends DefaultController {
      * @Route("/{entityId}/removeFieldValue/{fieldValueId}", name="yoghurt_entity_removeFieldValue")
      */
     public function removeFieldValue($entityId, $fieldValueId) {
-        $em = $this->getDoctrine()->getEntityManager();
+        $em = $this->getDoctrine()->getManager();
         $entity = $em->getRepository('SpoiledMilkYoghurtBundle:Entity')->find($entityId);
 
         if (!$entity) {
@@ -385,7 +385,7 @@ class EntityController extends DefaultController {
         }
 
         $req = $this->getRequest();
-        $em = $this->getDoctrine()->getEntityManager();
+        $em = $this->getDoctrine()->getManager();
         $entity = $em->getRepository('SpoiledMilkYoghurtBundle:Entity')->find($id);
 
         if (!$entity) {

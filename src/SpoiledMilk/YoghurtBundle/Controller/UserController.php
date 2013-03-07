@@ -23,7 +23,7 @@ class UserController extends Controller {
      * @Template()
      */
     public function indexAction() {
-        $em = $this->getDoctrine()->getEntityManager();
+        $em = $this->getDoctrine()->getManager();
         $entities = $em->getRepository('SpoiledMilkYoghurtBundle:User')->findAll();
         $userForm = $this->createForm(new UserType());
 
@@ -68,7 +68,7 @@ class UserController extends Controller {
                     ->getEncoder($entity);
             $entity->setPassword($encoder->encodePassword($entity->getPassword(), $entity->getSalt()));
 
-            $em = $this->getDoctrine()->getEntityManager();
+            $em = $this->getDoctrine()->getManager();
             $em->persist($entity);
             $em->flush();
 
@@ -90,7 +90,7 @@ class UserController extends Controller {
      * @Template()
      */
     public function editAction($id) {
-        $em = $this->getDoctrine()->getEntityManager();
+        $em = $this->getDoctrine()->getManager();
 
         $entity = $em->getRepository('SpoiledMilkYoghurtBundle:User')->find($id);
 
@@ -113,7 +113,7 @@ class UserController extends Controller {
      * @Template("SpoiledMilkYoghurtBundle:User:edit.html.twig")
      */
     public function updateAction($id) {
-        $em = $this->getDoctrine()->getEntityManager();
+        $em = $this->getDoctrine()->getManager();
         $entity = $em->getRepository('SpoiledMilkYoghurtBundle:User')->find($id);
 
         if (!$entity) {
@@ -156,7 +156,7 @@ class UserController extends Controller {
      * @Route("/{id}/delete", name="yoghurt_user_delete")
      */
     public function deleteAction($id) {
-        $em = $this->getDoctrine()->getEntityManager();
+        $em = $this->getDoctrine()->getManager();
         $entity = $em->getRepository('SpoiledMilkYoghurtBundle:User')->find($id);
 
         if (!$entity) {

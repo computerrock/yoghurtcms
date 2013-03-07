@@ -23,7 +23,7 @@ class FieldMetaController extends Controller {
      * @Template()
      */
     public function indexAction($field_id) {
-        $em = $this->getDoctrine()->getEntityManager();
+        $em = $this->getDoctrine()->getManager();
         $field = $em->getRepository('SpoiledMilkYoghurtBundle:Field')->find($field_id);
         
         if(!$field) {
@@ -56,7 +56,7 @@ class FieldMetaController extends Controller {
      * @Template()
      */
     public function newAction($field_id) {
-        $em = $this->getDoctrine()->getEntityManager();
+        $em = $this->getDoctrine()->getManager();
         $field = $em->getRepository('SpoiledMilkYoghurtBundle:Field')->find($field_id);
         
         if(!$field) {
@@ -81,7 +81,7 @@ class FieldMetaController extends Controller {
      * @Template("SpoiledMilkYoghurtBundle:FieldMeta:new.html.twig")
      */
     public function createAction($field_id) {
-        $em = $this->getDoctrine()->getEntityManager();
+        $em = $this->getDoctrine()->getManager();
         $field = $em->getRepository('SpoiledMilkYoghurtBundle:Field')->find($field_id);
         
         if(!$field) {
@@ -111,7 +111,7 @@ class FieldMetaController extends Controller {
      * @Template()
      */
     public function editAction($id) {
-        $em = $this->getDoctrine()->getEntityManager();
+        $em = $this->getDoctrine()->getManager();
 
         $entity = $em->getRepository('SpoiledMilkYoghurtBundle:FieldMeta')->find($id);
 
@@ -137,7 +137,7 @@ class FieldMetaController extends Controller {
      * @Template("SpoiledMilkYoghurtBundle:FieldMeta:edit.html.twig")
      */
     public function updateAction($field_id, $meta_id) {
-        $em = $this->getDoctrine()->getEntityManager();
+        $em = $this->getDoctrine()->getManager();
         $fieldMeta = $em->getRepository('SpoiledMilkYoghurtBundle:FieldMeta')->find($meta_id);
 
         if (!$fieldMeta) {
@@ -173,7 +173,7 @@ class FieldMetaController extends Controller {
         $form->bindRequest($request);
 
         if ($form->isValid()) {
-            $em = $this->getDoctrine()->getEntityManager();
+            $em = $this->getDoctrine()->getManager();
             $entity = $em->getRepository('SpoiledMilkYoghurtBundle:FieldMeta')->find($meta_id);
 
             if (!$entity) {

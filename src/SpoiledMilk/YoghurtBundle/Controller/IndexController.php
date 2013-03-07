@@ -20,12 +20,12 @@ class IndexController extends DefaultController {
         if (!$publishing) {
             $publishing = new \SpoiledMilk\YoghurtBundle\Entity\Publishing(1);
             $publishing->setLastUpdateDateTime(new \DateTime());
-            $this->getDoctrine()->getEntityManager()->persist($publishing);
-            $this->getDoctrine()->getEntityManager()->flush();
+            $this->getDoctrine()->getManager()->persist($publishing);
+            $this->getDoctrine()->getManager()->flush();
         }
         
         $dql = 'select max(e.modified) from SpoiledMilkYoghurtBundle:Entity e';
-        $lastModified = $this->getDoctrine()->getEntityManager()->createQuery($dql)->getSingleScalarResult();
+        $lastModified = $this->getDoctrine()->getManager()->createQuery($dql)->getSingleScalarResult();
         return array(
             'publishing' => $publishing,
             'lastModified' => $lastModified
@@ -62,8 +62,8 @@ class IndexController extends DefaultController {
         // Update last publish datetime
         $publishing = $this->getDoctrine()->getRepository('SpoiledMilkYoghurtBundle:Publishing')->find(1);
         $publishing->setLastPublishDateTime(new \DateTime());
-        $this->getDoctrine()->getEntityManager()->persist($publishing);
-        $this->getDoctrine()->getEntityManager()->flush();
+        $this->getDoctrine()->getManager()->persist($publishing);
+        $this->getDoctrine()->getManager()->flush();
         
         $this->getRequest()->getSession()->setFlash('success', 'Publish successfully compleated');
         return $this->redirect($this->generateUrl('yoghurt_index'));
