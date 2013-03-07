@@ -38,7 +38,7 @@ class FieldMeta
     /**
      * @var Field
      *
-     * @ORM\ManyToOne(targetEntity="Field", inversedBy="metaValues")
+     * @ORM\ManyToOne(targetEntity="Field", inversedBy="fieldMeta")
      * @ORM\JoinColumn(name="field_id", referencedColumnName="id")
      */
     private $field;
