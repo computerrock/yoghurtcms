@@ -76,11 +76,11 @@ class TermController extends DefaultController {
             $em->persist($term);
             $em->flush();
 
-            $request->getSession()->setFlash('success', 'Changes successfully saved.');
+            $request->getSession()->getFlashBag()->add('success', 'Changes successfully saved.');
             return $this->redirect($this->generateUrl('yoghurt_term_edit', array('termId' => $id)));
         }
 
-        $request->getSession()->setFlash('error', 'The form contains errors. Changes were not saved.');
+        $request->getSession()->getFlashBag()->add('error', 'The form contains errors. Changes were not saved.');
         return array(
             'term' => $term,
             'edit_form' => $editForm->createView(),

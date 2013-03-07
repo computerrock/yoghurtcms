@@ -32,12 +32,14 @@
         {{ render(controller('SpoiledMilkYoghurtBundle:Helper:topMenu')) }}
             
         <div class="container-fluid">
-            {% for key, flash in app.session.getFlashes() %}
+            {% for key, flashes in app.session.flashBag() %}
                 <div class="row-fluid">
-                    <div class="alert alert-{{key}}">
-                        <a class="close" data-dismiss="alert">×</a>
-                        {{flash}}
-                    </div>
+                    {% for flash in flashes %}
+                        <div class="alert alert-{{key}}">
+                            <a class="close" data-dismiss="alert">×</a>
+                            {{ flash }}{% if not loop.last %}<br/>{% endif %}
+                        </div>
+                    {% endfor %}
                 </div>
             {% endfor %}
             

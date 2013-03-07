@@ -96,9 +96,9 @@ class FieldMetaController extends Controller {
         if ($form->isValid()) {
             $em->persist($entity);
             $em->flush();
-            $this->getRequest()->getSession()->setFlash('success', 'Field setting successfully created.');
+            $this->getRequest()->getSession()->getFlashBag()->add('success', 'Field setting successfully created.');
         } else {
-            $this->getRequest()->getSession()->setFlash('error', 'The form contained errors. Setting was not saved.');            
+            $this->getRequest()->getSession()->getFlashBag()->add('error', 'The form contained errors. Setting was not saved.');            
         }
 
         return $this->redirect($this->generateUrl('yoghurt_fieldmeta', array('field_id' => $field_id)));
@@ -150,9 +150,9 @@ class FieldMetaController extends Controller {
         if ($editForm->isValid()) {
             $em->persist($fieldMeta);
             $em->flush();
-            $this->getRequest()->getSession()->setFlash('success', 'Setting successfully updated.');
+            $this->getRequest()->getSession()->getFlashBag()->add('success', 'Setting successfully updated.');
         } else {
-            $this->getRequest()->getSession()->setFlash('error', 'The entered value is illegal, setting was not updated.');
+            $this->getRequest()->getSession()->getFlashBag()->add('error', 'The entered value is illegal, setting was not updated.');
         }
         
         return $this->redirect($this->generateUrl(

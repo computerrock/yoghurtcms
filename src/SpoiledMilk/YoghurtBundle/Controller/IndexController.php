@@ -43,7 +43,7 @@ class IndexController extends DefaultController {
         else
             $msg = "Removed $numberOfRemoved files";
         
-        $this->getRequest()->getSession()->setFlash('success', $msg);
+        $this->getRequest()->getSession()->getFlashBag()->add('success', $msg);
         return $this->redirect($this->generateUrl('yoghurt_index'));
     }
     
@@ -65,7 +65,7 @@ class IndexController extends DefaultController {
         $this->getDoctrine()->getManager()->persist($publishing);
         $this->getDoctrine()->getManager()->flush();
         
-        $this->getRequest()->getSession()->setFlash('success', 'Publish successfully compleated');
+        $this->getRequest()->getSession()->getFlashBag()->add('success', 'Publish successfully compleated');
         return $this->redirect($this->generateUrl('yoghurt_index'));
     }
 

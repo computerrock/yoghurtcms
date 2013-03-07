@@ -71,10 +71,10 @@ class VocabularyController extends DefaultController {
             $em->persist($entity);
             $em->flush();
 
-            $request->getSession()->setFlash('success', 'Vocabulary successfully created.');
+            $request->getSession()->getFlashBag()->add('success', 'Vocabulary successfully created.');
             return $this->redirect($this->generateUrl('yoghurt_vocabulary_edit', array('id' => $entity->getId())));
         } else {
-            $request->getSession()->setFlash('error', 'The form contains errors. Vocabulary was not created.');
+            $request->getSession()->getFlashBag()->add('error', 'The form contains errors. Vocabulary was not created.');
         }
 
         return array(
@@ -146,7 +146,7 @@ class VocabularyController extends DefaultController {
             $em->persist($entity);
             $em->flush();
 
-            $request->getSession()->setFlash('success', 'Changes successfully saved.');
+            $request->getSession()->getFlashBag()->add('success', 'Changes successfully saved.');
             return $this->redirect($this->generateUrl('yoghurt_vocabulary_edit', array('id' => $id)));
         }
         
@@ -163,10 +163,10 @@ class VocabularyController extends DefaultController {
             }
         }
         
-        $request->getSession()->setFlash('error', 'The form contains errors.');
+        $request->getSession()->getFlashBag()->add('error', 'The form contains errors.');
         $errors = $this->getFormErrors($editForm);
         for($i = 0; $i < sizeof($errors); $i++) {
-            $request->getSession()->setFlash("error $i", $errors[$i]);
+            $request->getSession()->getFlashBag()->add("error $i", $errors[$i]);
         }
 
         return array(
@@ -201,7 +201,7 @@ class VocabularyController extends DefaultController {
 
             $em->remove($entity);
             $em->flush();
-            $request->getSession()->setFlash('success', 'Vocabulary successfully deleted.');
+            $request->getSession()->getFlashBag()->add('success', 'Vocabulary successfully deleted.');
         }
 
         return $this->redirect($this->generateUrl('yoghurt_vocabulary'));
@@ -227,9 +227,9 @@ class VocabularyController extends DefaultController {
             $term->setVocabulary($vocabulary);
             $em->persist($term);
             $em->flush();
-            $this->getRequest()->getSession()->setFlash('success', 'Term successfully added.');
+            $this->getRequest()->getSession()->getFlashBag()->add('success', 'Term successfully added.');
         } else {
-            $this->getRequest()->getSession()->setFlash('error', 'The form contained errors. Term was not added.');
+            $this->getRequest()->getSession()->getFlashBag()->add('error', 'The form contained errors. Term was not added.');
         }
 
         return $this->redirect($this->generateUrl('yoghurt_vocabulary_edit', array('id' => $id)));
@@ -254,7 +254,7 @@ class VocabularyController extends DefaultController {
 
         $em->remove($term);
         $em->flush();
-        $this->getRequest()->getSession()->setFlash('success', 'Term successfully deleted.');
+        $this->getRequest()->getSession()->getFlashBag()->add('success', 'Term successfully deleted.');
         return $this->redirect($this->generateUrl('yoghurt_vocabulary_edit', array('id' => $vocabularyId)));
     }
     
@@ -278,13 +278,13 @@ class VocabularyController extends DefaultController {
         if($etvForm->isValid()) {
             $em->persist($etv);
             $em->flush();
-            $this->getRequest()->getSession()->setFlash('success', 'Entity type successfully added.');
+            $this->getRequest()->getSession()->getFlashBag()->add('success', 'Entity type successfully added.');
         } else {
-            $this->getRequest()->getSession()->setFlash('error', 'The form contained errors. Entity type was not added.');
+            $this->getRequest()->getSession()->getFlashBag()->add('error', 'The form contained errors. Entity type was not added.');
             $errors = $this->getFormErrors($etvForm);
             
             for($i = 0; $i < sizeof($errors); $i++) {
-                $this->getRequest()->getSession()->setFlash("error $i", $errors[$i]);
+                $this->getRequest()->getSession()->getFlashBag()->add("error $i", $errors[$i]);
             }
         }
         

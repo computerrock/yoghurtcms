@@ -72,11 +72,11 @@ class UserController extends Controller {
             $em->persist($entity);
             $em->flush();
 
-            $request->getSession()->setFlash('success', 'User successfully created.');
+            $request->getSession()->getFlashBag()->add('success', 'User successfully created.');
             return $this->redirect($this->generateUrl('yoghurt_user_edit', array('id' => $entity->getId())));
         }
 
-        $request->getSession()->setFlash('error', 'The form containes errors. User was not created.');
+        $request->getSession()->getFlashBag()->add('error', 'The form containes errors. User was not created.');
         return array(
             'entity' => $entity,
             'form' => $form->createView()
@@ -139,11 +139,11 @@ class UserController extends Controller {
             $em->persist($entity);
             $em->flush();
 
-            $request->getSession()->setFlash('success', 'Changes successfully saved.');
+            $request->getSession()->getFlashBag()->add('success', 'Changes successfully saved.');
             return $this->redirect($this->generateUrl('yoghurt_user_edit', array('id' => $id)));
         }
 
-        $request->getSession()->setFlash('error', 'The form containes errors. Changes were not saved.');
+        $request->getSession()->getFlashBag()->add('error', 'The form containes errors. Changes were not saved.');
         return array(
             'entity' => $entity,
             'edit_form' => $editForm->createView(),
@@ -165,7 +165,7 @@ class UserController extends Controller {
 
         $em->remove($entity);
         $em->flush();
-        $this->getRequest()->getSession()->setFlash('success', 'User successfully deleted.');
+        $this->getRequest()->getSession()->getFlashBag()->add('success', 'User successfully deleted.');
         return $this->redirect($this->generateUrl('yoghurt_user'));
     }
 

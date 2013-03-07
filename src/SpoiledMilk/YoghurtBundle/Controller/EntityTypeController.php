@@ -128,16 +128,16 @@ class EntityTypeController extends DefaultController {
         if ($editForm->isValid()) {
             $em->persist($entityType);
             $em->flush();
-            $this->getRequest()->getSession()->setFlash('success', 'Entity type successfully updated.');
+            $this->getRequest()->getSession()->getFlashBag()->add('success', 'Entity type successfully updated.');
             return $this->redirect($this->generateUrl('yoghurt_entitytype_edit', array('id' => $id)));
         } else {
             $fieldForm = $this->createForm(new FieldType(), new Field());
             $vocabularyForm = $this->createForm(new EntityTypeVocabularyType());
-            $this->getRequest()->getSession()->setFlash('error', 'The form contains errors.');
+            $this->getRequest()->getSession()->getFlashBag()->add('error', 'The form contains errors.');
 
             $errors = $this->getFormErrors($editForm);
             for ($i = 0; $i < sizeof($errors); $i++) {
-                $this->getRequest()->getSession()->setFlash("error $i", $errors[$i]);
+                $this->getRequest()->getSession()->getFlashBag()->add("error $i", $errors[$i]);
             }
 
             return array(
@@ -242,9 +242,9 @@ class EntityTypeController extends DefaultController {
             $em->persist($field);
             $this->addFieldToEntities($field, $entityType);
             $em->flush();
-            $this->getRequest()->getSession()->setFlash('success', 'Field successfully added.');
+            $this->getRequest()->getSession()->getFlashBag()->add('success', 'Field successfully added.');
         } else {
-            $this->getRequest()->getSession()->setFlash('error', 'The form contained errors. Field was not added.');
+            $this->getRequest()->getSession()->getFlashBag()->add('error', 'The form contained errors. Field was not added.');
         }
 
         return $this->redirect($this->generateUrl('yoghurt_entitytype_edit', array('id' => $id)));
@@ -269,7 +269,7 @@ class EntityTypeController extends DefaultController {
 
         $em->remove($field);
         $em->flush();
-        $this->getRequest()->getSession()->setFlash('success', 'Field successfully deleted.');
+        $this->getRequest()->getSession()->getFlashBag()->add('success', 'Field successfully deleted.');
 
         return $this->redirect($this->generateUrl('yoghurt_entitytype_edit', array('id' => $entity_type_id)));
     }
@@ -294,13 +294,13 @@ class EntityTypeController extends DefaultController {
         if ($vocabularyForm->isValid()) {
             $em->persist($etv);
             $em->flush();
-            $this->getRequest()->getSession()->setFlash('success', 'Vocabulary successfully added.');
+            $this->getRequest()->getSession()->getFlashBag()->add('success', 'Vocabulary successfully added.');
         } else {
-            $this->getRequest()->getSession()->setFlash('error', 'The form contained errors. Vocabulary was not added.');
+            $this->getRequest()->getSession()->getFlashBag()->add('error', 'The form contained errors. Vocabulary was not added.');
             $errors = $this->getFormErrors($vocabularyForm);
 
             for ($i = 0; $i < sizeof($errors); $i++) {
-                $this->getRequest()->getSession()->setFlash("error $i", $errors[$i]);
+                $this->getRequest()->getSession()->getFlashBag()->add("error $i", $errors[$i]);
             }
         }
 

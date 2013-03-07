@@ -91,17 +91,17 @@ class EntityController extends DefaultController {
             $this->uploadFiles(array(), $entity);
             $em->persist($entity);
             $em->flush();
-            $this->getRequest()->getSession()->setFlash('success', 'New ' . $entity->getEntityType()->getName() . ' successfully created.');
+            $this->getRequest()->getSession()->getFlashBag()->add('success', 'New ' . $entity->getEntityType()->getName() . ' successfully created.');
 
             if ($next)
                 return $this->redirect($this->generateUrl('yoghurt_entity_new', array('type_id' => $type_id)));
             else
                 return $this->redirect($this->generateUrl('yoghurt_entity_edit', array('id' => $entity->getId())));
         } else {
-            $this->getRequest()->getSession()->setFlash('error', 'The form containes errors, changes were not saved.');
+            $this->getRequest()->getSession()->getFlashBag()->add('error', 'The form containes errors, changes were not saved.');
             $errors = $this->getFormErrors($form);
             for ($i = 0; $i < sizeof($errors); $i++) {
-                $this->getRequest()->getSession()->setFlash('error ' . $i, $errors[$i]);
+                $this->getRequest()->getSession()->getFlashBag()->add('error ' . $i, $errors[$i]);
             }
         }
 
@@ -188,13 +188,13 @@ class EntityController extends DefaultController {
             $this->uploadFiles($existingFiles, $entity);
             $em->persist($entity);
             $em->flush();
-            $request->getSession()->setFlash('success', $entity->getEntityType()->getName() . ' successfully updated.');
+            $request->getSession()->getFlashBag()->add('success', $entity->getEntityType()->getName() . ' successfully updated.');
             return $this->redirect($this->generateUrl('yoghurt_entity_edit', array('id' => $id)));
         } else {
-            $this->getRequest()->getSession()->setFlash('error', 'The form containes errors, changes were not saved.');
+            $this->getRequest()->getSession()->getFlashBag()->add('error', 'The form containes errors, changes were not saved.');
             $errors = $this->getFormErrors($editForm);
             for ($i = 0; $i < sizeof($errors); $i++) {
-                $this->getRequest()->getSession()->setFlash('error ' . $i, $errors[$i]);
+                $this->getRequest()->getSession()->getFlashBag()->add('error ' . $i, $errors[$i]);
             }
         }
 
@@ -333,11 +333,11 @@ class EntityController extends DefaultController {
             $em->persist($fieldValue);
             $em->persist($entity);
             $em->flush();
-            $this->getRequest()->getSession()->setFlash('success', 'New value successfully added.');
+            $this->getRequest()->getSession()->getFlashBag()->add('success', 'New value successfully added.');
         } else {
             $errors = $this->getFormErrors($form);
             for ($i = 0; $i < sizeof($errors); $i++) {
-                $this->getRequest()->getSession()->setFlash('error ' . $i, $errors[$i]);
+                $this->getRequest()->getSession()->getFlashBag()->add('error ' . $i, $errors[$i]);
             }
         }
 
@@ -370,7 +370,7 @@ class EntityController extends DefaultController {
         $entity->setModified(new \DateTime());
         $em->persist($entity);
         $em->flush();
-        $this->getRequest()->getSession()->setFlash('success', 'Value successfully removed');
+        $this->getRequest()->getSession()->getFlashBag()->add('success', 'Value successfully removed');
         return $this->redirect($this->generateUrl('yoghurt_entity_edit', array('id' => $entityId)));
     }
     
@@ -395,7 +395,7 @@ class EntityController extends DefaultController {
         $entity->setStatus($status);
         $em->persist($entity);
         $em->flush();
-        $req->getSession()->setFlash('success', 'Status successfully changed');
+        $req->getSession()->getFlashBag()->add('success', 'Status successfully changed');
         
         if ($req->get('back')) {
             return $this->redirect($req->get('back'));
