@@ -40,7 +40,7 @@ class SpoiledMilkTermType extends TextType {
 
     public function buildView(FormView $view, FormInterface $form, array $options) {
         parent::buildView($view, $form);
-        $view->set('terms', $form->getAttribute('terms'));
+        $view->vars[terms] = $form->getAttribute('terms');
     }
 
     public function getParent() {

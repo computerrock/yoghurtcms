@@ -5,6 +5,7 @@ namespace SpoiledMilk\YoghurtBundle\Form\Type;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
+use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 /**
  * Extension of the standard FileType
@@ -23,19 +24,19 @@ class SpoiledMilkFileType extends FileType {
      * {@inheritdoc}
      */
     public function buildView(FormView $view, FormInterface $form, array $options) {
-        $view
-                ->set('multipart', true)
-                ->set('type', 'file')
-                ->set('value', '')
-        ;
+        $view->vars = array_replace($view->vars, array(
+            'multipart' => true,
+            'type' => 'file',
+            'value' => ''
+        ));
 
         if ($form->getData()) {
             switch ($this->yoghurtService->getFileMimeType($form->getData())) {
                 case 'img':
-                    $view->set('data_img', $form->getData());
+                    $view->vars['data_img'] = $form->getData();
                     break;
                 case 'bin':
-                    $view->set('data_file', $form->getData());
+                    $view->vars['data_file'] = $form->getData();
                     break;
             }
         }
@@ -52,6 +53,15 @@ class SpoiledMilkFileType extends FileType {
         return 'smfile';
     }
 
-}
+    /**
+     * {@inheritdoc}
+     */
+    public function setDefaultOptions(OptionsResolverInterface $resolver) {
+        $resolver->setDefaults(array(
+            'compound' => false,
+            'data_class' => null,
+            'empty_data' => null,
+        ));
+    }
 
-?>
+}
