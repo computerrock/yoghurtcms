@@ -106,13 +106,8 @@ abstract class FieldValue {
 
         foreach ($this->constraints as $constraint) {
             $validator = $validatorFactory->getInstance($constraint);
-
-            if (!$validator->isValid($this->getValue(), $constraint)) {
-                $context->addViolation(
-                        $validator->getMessageTemplate(), 
-                        $validator->getMessageParameters(), 
-                        $this->getValue());
-            }
+            $validator->initialize($context);
+            $validator->validate($this->getValue(), $constraint);
         }
     }
 
