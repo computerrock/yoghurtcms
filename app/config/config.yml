@@ -68,7 +68,11 @@ knp_paginator:
     template:
         pagination: SpoiledMilkYoghurtBundle:Pagination:sliding.html.twig     # sliding pagination controls template
         sortable: SpoiledMilkYoghurtBundle:Pagination:sortable_link.html.twig # sort link template
-        
+
+mopa_bootstrap:
+    form:
+        show_legend: false # default is true
+
 # Yoghurt specific configuration
 spoiled_milk_yoghurt:
     yoghurt_service:
