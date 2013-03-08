@@ -20,12 +20,6 @@ services:
         tags:
             - { name: form.type, alias: smfile }
             
-    form.type.spoiledMilkTerm:
-        class: SpoiledMilk\YoghurtBundle\Form\Type\SpoiledMilkTermType
-        arguments: [ "@doctrine.orm.entity_manager"]
-        tags:
-            - { name: form.type, alias: smterm }
-            
     form.type.spoiledMilkMapSingle:
         class: SpoiledMilk\YoghurtBundle\Form\Type\SpoiledMilkMapSingleType
         tags:
