@@ -4,6 +4,7 @@ namespace SpoiledMilk\YoghurtBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 class VocabularyType extends AbstractType {
 
@@ -22,6 +23,13 @@ class VocabularyType extends AbstractType {
 
     public function getName() {
         return 'spoiledmilk_yoghurtbundle_vocabularytype';
+    }
+    
+    public function setDefaultOptions(OptionsResolverInterface $resolver) {
+        $resolver->setDefaults(array(
+            'data_class' => 'SpoiledMilk\YoghurtBundle\Entity\Vocabulary',
+            'cascade_validation' => true,
+        ));
     }
 
 }

@@ -4,6 +4,7 @@ namespace SpoiledMilk\YoghurtBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 class TermType extends AbstractType {
 
@@ -36,11 +37,12 @@ class TermType extends AbstractType {
         return 'spoiledmilk_yoghurtbundle_termtype';
     }
     
-    public function getDefaultOptions(array $options) {
-        $ret = parent::getDefaultOptions($options);
-        $ret['vocabularyId'] = 0;
-        $ret['termTreeIds'] = array(0);
-        return $ret;
+    public function setDefaultOptions(OptionsResolverInterface $resolver) {
+        $resolver->setDefaults(array(
+            'data_class' => 'SpoiledMilk\YoghurtBundle\Entity\Term',
+            'vocabularyId' => 0,
+            'termTreeIds' => array(0)
+        ));
     }
 
 }

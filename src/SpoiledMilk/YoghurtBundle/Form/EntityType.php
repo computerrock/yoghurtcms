@@ -4,6 +4,7 @@ namespace SpoiledMilk\YoghurtBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 class EntityType extends AbstractType {
 
@@ -59,11 +60,13 @@ class EntityType extends AbstractType {
     public function getName() {
         return 'spoiledmilk_yoghurtbundle_entitytype';
     }
-
-    public function getDefaultOptions(array $options) {
-        $ret = parent::getDefaultOptions($options);
-        $ret['entityTypeVocabularies'] = array();
-        return $ret;
+    
+    public function setDefaultOptions(OptionsResolverInterface $resolver) {
+        $resolver->setDefaults(array(
+            'data_class' => 'SpoiledMilk\YoghurtBundle\Entity\Entity',
+            'cascade_validation' => true,
+            'entityTypeVocabularies' => array()
+        ));
     }
 
 }
