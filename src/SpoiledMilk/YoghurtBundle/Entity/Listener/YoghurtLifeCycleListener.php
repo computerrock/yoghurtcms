@@ -9,6 +9,12 @@ use Doctrine\ORM\UnitOfWork;
 
 class YoghurtLifeCycleListener {
 
+    /**
+     * Used to set position value on EntityType and FieldValue instances, if 
+     * they're not already set.
+     * 
+     * @param \Doctrine\ORM\Event\LifecycleEventArgs $args
+     */
     public function preUpdate(LifecycleEventArgs $args) {
         $entity = $args->getEntity();
 
@@ -19,6 +25,12 @@ class YoghurtLifeCycleListener {
         }
     }
 
+    /**
+     * Used to set position value on EntityType and FieldValue instances, if 
+     * they're not already set.
+     * 
+     * @param \Doctrine\ORM\Event\LifecycleEventArgs $args
+     */
     public function prePersist(LifecycleEventArgs $args) {
         $entity = $args->getEntity();
 
@@ -29,6 +41,11 @@ class YoghurtLifeCycleListener {
         }
     }
     
+    /**
+     * Handles changes in Field instances. Position and type.
+     * 
+     * @param \Doctrine\ORM\Event\OnFlushEventArgs $args
+     */
     public function onFlush(OnFlushEventArgs $args) {
         $uow = $args->getEntityManager()->getUnitOfWork();
 
@@ -41,6 +58,12 @@ class YoghurtLifeCycleListener {
         }
     }
     
+    /**
+     * If EntityType instance has no position, generate and set it.
+     * 
+     * @param \SpoiledMilk\YoghurtBundle\Entity\EntityType $entityType
+     * @param type $entityManager
+     */
     private function entityTypePerPersistUpdate($entityType, $entityManager) {
         if (!$entityType->getPosition()) {
             $pos = $entityManager
@@ -50,6 +73,12 @@ class YoghurtLifeCycleListener {
         }
     }
 
+    /**
+     * If FieldValue instance nas no position, generate and set it.
+     * 
+     * @param SpoiledMilk\YoghurtBundle\Entity\FieldValue $fieldValue
+     * @param type $entityManager
+     */
     private function fieldValuePrePersistUpdate($fieldValue, $entityManager) {
         if (!$fieldValue->getPosition()) {
             $pos = 1000 * $fieldValue->getField()->getPosition()
@@ -58,6 +87,16 @@ class YoghurtLifeCycleListener {
         }
     }
     
+    /**
+     * Handles changes in position (repositions FieldValues) and type (tries to
+     * convert existing data to the new type) on a Field instance.
+     * 
+     * @param \SpoiledMilk\YoghurtBundle\Entity\Field $field
+     * @param \Doctrine\ORM\UnitOfWork $uow
+     * 
+     * @return boolean True if additional changes were made in this method, 
+     * false otherwise
+     */
     private function fieldOnFlush(YEntity\Field $field, UnitOfWork $uow) {
         $additionalChanges = false;
         $changeSet = $uow->getEntityChangeSet($field);
@@ -85,6 +124,14 @@ class YoghurtLifeCycleListener {
         return $additionalChanges;
     }
     
+    /**
+     * Handles changes of field type. Uses ValueConverter to try and preserve 
+     * values already set.
+     * 
+     * @param \SpoiledMilk\YoghurtBundle\Entity\Field $field
+     * @param \SpoiledMilk\YoghurtBundle\Entity\FieldType $newType
+     * @param \Doctrine\ORM\UnitOfWork $uow
+     */
     private function changeFieldType(YEntity\Field $field, YEntity\FieldType $newType, UnitOfWork $uow) {
         foreach ($field->getFieldValues() as $fieldValue) {
             $className = 'SpoiledMilk\YoghurtBundle\Entity\\' . $newType->getClassName();
