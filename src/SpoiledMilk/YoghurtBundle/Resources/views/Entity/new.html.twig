@@ -23,11 +23,19 @@
     {% endif %}
     {{ form_row(form._token) }}
     
-    {% if form.fieldValues %}
-        {% for key, fv in form.fieldValues %}
-            {{ form_row(fv) }}
-        {% endfor %}
-    {% endif %}
+    {% for key, fv in form.fieldValues %}
+        <div class="control-group">
+            {{ form_label(fv.value) }}
+            {% if form_errors(fv) %}
+                <div class="symfony-form-errors">
+                    {{ form_errors(fv) }}
+                </div>
+            {% endif %}
+            <div class="controls">
+                {{ form_widget(fv.value) }}
+            </div>
+        </div>
+    {% endfor %}
     
     <button type="submit" class="btn btn-primary">Create</button>
     
