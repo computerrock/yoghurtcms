@@ -22,9 +22,9 @@ class HelperController extends DefaultController {
     /**
      * @Template 
      */
-    public function leftMenuAction() {
+    public function leftMenuAction($requestUrl) {
+        $requestUrl = str_replace('http://y2.local', '', $requestUrl);
         $entityTypes = $this->getEntityTypes();
-        $requestUrl = $this->getRequest()->getRequestUri();
         $activeIndex = -1;
 
         if (stripos($requestUrl, '/admin/user') === 0) {
