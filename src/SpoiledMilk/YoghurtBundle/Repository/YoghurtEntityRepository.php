@@ -132,21 +132,7 @@ class YoghurtEntityRepository extends EntityRepository {
             and et.id = :etid
             order by e.position desc';
         
-        $result = $this->_em->createQuery($dql)
-                ->setParameter('pos', $entity->getPosition())
-                ->setParameter('etid', $entity->getEntityType()->getId())
-                ->getResult();
-        
-        if (!$result)
-            return;
-        
-        $other = $result[0];
-        $otherPos = $other->getPosition();
-        $other->setPosition($entity->getPosition());
-        $entity->setPosition($otherPos);
-        $this->_em->persist($other);
-        $this->_em->persist($entity);
-        $this->_em->flush();
+        $this->swapPositions($entity, $dql);
     }
     
     /**
@@ -165,7 +151,18 @@ class YoghurtEntityRepository extends EntityRepository {
             and et.id = :etid
             order by e.position asc';
         
-        $result = $this->_em->createQuery($dql)
+        $this->swapPositions($entity, $dql);
+    }
+    
+    /**
+     * Gets the first Entity from the DQL query, and swaps it's position with
+     * the given Entity's position
+     * 
+     * @param \SpoiledMilk\YoghurtBundle\Entity\Entity $entity
+     * @param string $dqlQuery Query for getting the other Entity
+     */
+    private function swapPositions(\SpoiledMilk\YoghurtBundle\Entity\Entity $entity, $dqlQuery) {
+        $result = $this->_em->createQuery($dqlQuery)
                 ->setParameter('pos', $entity->getPosition())
                 ->setParameter('etid', $entity->getEntityType()->getId())
                 ->getResult();
@@ -180,12 +177,6 @@ class YoghurtEntityRepository extends EntityRepository {
         $this->_em->persist($other);
         $this->_em->persist($entity);
         $this->_em->flush();
-    }
-    
-    private function swapPositions($first, $second) {
-        $firstPos = $first->getPosition();
-        $first->setPositon($second->getPosition());
-        $second->setPosition($firstPos);
     }
 
 }
