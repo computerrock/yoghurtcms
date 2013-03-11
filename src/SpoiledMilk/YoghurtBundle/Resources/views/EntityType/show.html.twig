@@ -106,7 +106,7 @@
                                 </td>
                                 
                                 <td>
-                                    {{ render(controller("SpoiledMilkYoghurtBundle:Helper:statusButton", {'entity': entity })) }}
+                                    {{ render(controller("SpoiledMilkYoghurtBundle:Helper:statusButton", {'entity': entity, 'back': app.request.uri })) }}
                                 </td>
 
                                 <td style="text-align: center; vertical-align: middle;">

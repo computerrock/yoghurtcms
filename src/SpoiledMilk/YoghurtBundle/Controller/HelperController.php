@@ -86,8 +86,7 @@ class HelperController extends DefaultController {
      * @return array
      * @throws \Exception 
      */
-    public function statusButtonAction($entity) {
-        $back = $this->getRequest()->getUri();
+    public function statusButtonAction($entity, $back) {        
         
         switch ($entity->getStatus()) {
             case \SpoiledMilk\YoghurtBundle\Entity\Entity::STATUS_ENABLED:
