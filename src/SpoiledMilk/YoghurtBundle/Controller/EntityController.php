@@ -445,6 +445,11 @@ class EntityController extends DefaultController {
         }
     }
 
+    /**
+     * Adds the set prefix to the name of the uploaded file
+     * 
+     * @param \SpoiledMilk\YoghurtBundle\Entity\FileValue $fileValue
+     */
     private function checkPrefix(Entity\FileValue $fileValue) {
         $fieldMeta = $fileValue->getField()->getFieldMeta();
 
@@ -531,6 +536,11 @@ class EntityController extends DefaultController {
         }
     }
     
+    /**
+     * Deletes all files on server that are connected to the given Entity instance
+     * 
+     * @param \SpoiledMilk\YoghurtBundle\Entity\Entity $entity
+     */
     private function deleteFiles(Entity\Entity $entity) {
         foreach ($entity->getFieldValues() as $value) {
             if ($value instanceof \SpoiledMilk\YoghurtBundle\Entity\FileValue) {
