@@ -12,8 +12,12 @@ class FieldMetaType extends AbstractType {
                 ->add('metaKey', 'text', array(
                     'label' => 'Setting name'
                 ))
-                ->add('metaValue', 'text', array(
-                    'label' => 'Setting value'
+                ->add('metaValue', 'textarea', array(
+                    'label' => 'Setting value',
+                    'attr' => array(
+                        'class' => 'input-xxlarge',
+                        'style' => 'height: 18px'
+                    )
                 ))
         ;
     }

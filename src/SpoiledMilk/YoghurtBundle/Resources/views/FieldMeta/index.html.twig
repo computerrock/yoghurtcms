@@ -12,9 +12,9 @@
 <table class="table table-striped table-bordered">
     <thead>
         <tr>
-            <th style="width: 50px">Setting name</th>
-            <th style="width: 300px">Setting value</th>
-            <th style="width: 50px">Actions</th>
+            <th style="width: 220px">Setting name</th>
+            <th>Setting value</th>
+            <th style="width: 120px">Actions</th>
         </tr>
     </thead>
     
@@ -31,7 +31,7 @@
                 {{ form_row(editForms[key]._token) }}
             </td>
             
-            <td>
+            <td style="text-align: center">
                 <button type="submit" class="btn btn-primary">Save</button>
                 </form>
                 <form action="{{ path('yoghurt_fieldmeta_delete', {'field_id': field.id, 'meta_id': entity.id}) }}"
@@ -40,7 +40,7 @@
                     {{ form_widget(deleteForms[key]._token) }}
                     <button type="submit" 
                             class="btn btn-danger"
-                            onclick="return confirm('Are you shure?')">
+                            onclick="return confirm('Are you sure?')">
                         Delete
                     </button>
                 </form>
