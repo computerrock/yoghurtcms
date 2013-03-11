@@ -12,9 +12,16 @@ use Symfony\Component\Validator\Constraints as Constraints;
 class FieldValueTypeSubscriber implements EventSubscriberInterface {
 
     private $factory;
+    
+    /**
+     * This is set to true if the Field contains not_blank setting
+     * @var boolean
+     */
+    private $isRequired;
 
     public function __construct(FormFactoryInterface $factory) {
         $this->factory = $factory;
+        $this->isRequired = false;
     }
 
     public static function getSubscribedEvents() {
@@ -33,7 +40,7 @@ class FieldValueTypeSubscriber implements EventSubscriberInterface {
         $data->setConstraints($this->getConstraints($fmeta));
         $ftype = null;
         $foptions = array(
-            'required' => false,
+            'required' => $this->isRequired,
             'error_bubbling' => false,
             'label' => $data->getField()->getLabel(),
             'attr' => array(
@@ -115,6 +122,7 @@ class FieldValueTypeSubscriber implements EventSubscriberInterface {
                 // COMMON
                 case 'not_blank':
                     $ret[] = new Constraints\NotBlank();
+                    $this->isRequired = true;
                     break;
 
                 case 'true':
