@@ -114,5 +114,78 @@ class YoghurtEntityRepository extends EntityRepository {
                 ->getQuery()
                 ->getResult();
     }
+    
+    /**
+     * Reduces the given Entity's position by swaping it with the Entity above it
+     * (Entity with lesser position)
+     * 
+     * @param \SpoiledMilk\YoghurtBundle\Entity\Entity $entity
+     */
+    public function moveUp(\SpoiledMilk\YoghurtBundle\Entity\Entity $entity) {
+        
+        /* Get Entities of the same Type, with positions less than the given
+         * Entity's position, ordered so that the closes one is firs on the top.
+         */
+        $dql = 'select e from SpoiledMilkYoghurtBundle:Entity e 
+            join e.entityType et 
+            where e.position < :pos 
+            and et.id = :etid
+            order by e.position desc';
+        
+        $result = $this->_em->createQuery($dql)
+                ->setParameter('pos', $entity->getPosition())
+                ->setParameter('etid', $entity->getEntityType()->getId())
+                ->getResult();
+        
+        if (!$result)
+            return;
+        
+        $other = $result[0];
+        $otherPos = $other->getPosition();
+        $other->setPosition($entity->getPosition());
+        $entity->setPosition($otherPos);
+        $this->_em->persist($other);
+        $this->_em->persist($entity);
+        $this->_em->flush();
+    }
+    
+    /**
+     * Increases the given Entity's position by swaping it with the Entity below it
+     * (Entity with greater position)
+     * 
+     * @param \SpoiledMilk\YoghurtBundle\Entity\Entity $entity
+     */
+    public function moveDown(\SpoiledMilk\YoghurtBundle\Entity\Entity $entity) {
+        /* Get Entities of the same Type, with positions less than the given
+         * Entity's position, ordered so that the closes one is firs on the top.
+         */
+        $dql = 'select e from SpoiledMilkYoghurtBundle:Entity e 
+            join e.entityType et 
+            where e.position > :pos 
+            and et.id = :etid
+            order by e.position asc';
+        
+        $result = $this->_em->createQuery($dql)
+                ->setParameter('pos', $entity->getPosition())
+                ->setParameter('etid', $entity->getEntityType()->getId())
+                ->getResult();
+        
+        if (!$result)
+            return;
+        
+        $other = $result[0];
+        $otherPos = $other->getPosition();
+        $other->setPosition($entity->getPosition());
+        $entity->setPosition($otherPos);
+        $this->_em->persist($other);
+        $this->_em->persist($entity);
+        $this->_em->flush();
+    }
+    
+    private function swapPositions($first, $second) {
+        $firstPos = $first->getPosition();
+        $first->setPositon($second->getPosition());
+        $second->setPosition($firstPos);
+    }
 
 }

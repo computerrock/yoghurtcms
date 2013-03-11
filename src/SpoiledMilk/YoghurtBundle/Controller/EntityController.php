@@ -226,19 +226,27 @@ class EntityController extends DefaultController {
     }
 
     /**
-     * @Route("/order/{id}/{direction}", name="yoghurt_entity_order")
+     * Moves the Entity up or down by one position
+     * 
+     * @Route("/order/{id}/{direction}", 
+     *   name="yoghurt_entity_order",
+     *   requirements={"direction" = "up|down"})
      */
     public function orderEntityAction($id, $direction) {
         $em = $this->getDoctrine()->getManager();
-        $repo = $em->getRepository('SpoiledMilkYoghurtBundle:Entity');
+        $repo = $em->getRepository('SpoiledMilkYoghurtBundle:Entity');        
         $entity = $repo->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Entity.');
         }
+        
+        if ($direction == 'up')
+            $repo->moveUp($entity);
+        else
+            $repo->moveDown($entity);
 
-        $this->sort($entity, $direction);
-
+        // Return to page the user started from
         $page = $this->getRequest()->get('page');
         $queryParams = $this->getRequest()->query->all();
         $query = '';

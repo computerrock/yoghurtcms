@@ -3,8 +3,6 @@
 namespace SpoiledMilk\YoghurtBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 
 class DefaultController extends Controller {
 
@@ -38,6 +36,7 @@ class DefaultController extends Controller {
     /**
      * Swaps positions of two elements in array, and returns an array of
      * db entities that need to be persisted
+     * 
      * @param array $array
      * @param object $array[$i] 
      * @param sting $dir up or down
@@ -68,39 +67,6 @@ class DefaultController extends Controller {
         }
 
         return $ret;
-    }
-    
-    /**
-     * @param SpoiledMilk\YoghurtBundle\Entity\Entity $entity
-     * @param string $direction {'up'|'down'}
-     */
-    public function sort(\SpoiledMilk\YoghurtBundle\Entity\Entity $entity, $direction) {
-        
-        if ($direction != 'up' && $direction != 'down')
-            throw new \UnexpectedValueException("Direction must be either 'up' or 'down'. Value given:  '$direction'");
-        
-        if ($direction == 'up')
-            $dqlSubquery = 'select max(e.position) from SpoiledMilkYoghurtBundle:Entity e join e.entityType et where e.position < ' . $entity->getPosition();
-        else if ($direction == 'down')
-            $dqlSubquery = "select min(e.position) from SpoiledMilkYoghurtBundle:Entity e join e.entityType et where e.position > " . $entity->getPosition();
-        
-        $dqlSubquery .= ' and et.id = ' . $entity->getEntityType()->getId();
-        $dql = "select e1 from SpoiledMilkYoghurtBundle:Entity e1 where e1.position = ($dqlSubquery)";
-        $em = $this->getDoctrine()->getManager();
-
-        try {
-            $otherEntity = $em->createQuery($dql)->getSingleResult();
-        } catch (\Doctrine\ORM\NoResultException $ex) {
-            return;
-        }
-
-        $position = $entity->getPosition();
-        $otherPosition = $otherEntity->getPosition();
-        $entity->setPosition($otherPosition);
-        $otherEntity->setPosition($position);
-        $em->persist($entity);
-        $em->persist($otherEntity);
-        $em->flush();
     }
     
     /**
