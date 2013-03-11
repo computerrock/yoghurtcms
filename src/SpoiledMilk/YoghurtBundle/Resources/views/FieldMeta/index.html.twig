@@ -77,7 +77,7 @@
         
         <div class="modal-body">
             {{ form_row(formNew.metaKey) }}
-            {{ form_row(formNew.metaValue) }}
+            {{ form_row(formNew.metaValue) | replace({'input-xxlarge':''}) | raw }}
             {{ form_row(formNew._token) }}
         </div>
         
