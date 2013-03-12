@@ -50,7 +50,8 @@ doctrine:
         auto_generate_proxy_classes: "%kernel.debug%"
         auto_mapping: true
 
-# Swiftmailer Configuration
+# Swiftmailer Configuration. Yoghurt core is not using it, so the whole bundle
+# is safe to remove.
 swiftmailer:
     transport: smtp
     host:      localhost
@@ -58,6 +59,7 @@ swiftmailer:
     password:  ~
     spool:     { type: memory }
 
+# Config for KnpPaginatorBundle. See https://github.com/KnpLabs/KnpPaginatorBundle
 knp_paginator:
     page_range: 10                     # default page range used in pagination control
     default_options:
@@ -69,9 +71,10 @@ knp_paginator:
         pagination: SpoiledMilkYoghurtBundle:Pagination:sliding.html.twig     # sliding pagination controls template
         sortable: SpoiledMilkYoghurtBundle:Pagination:sortable_link.html.twig # sort link template
 
+# Config for MopaBootstrapBundle. See https://github.com/phiamo/MopaBootstrapBundle
 mopa_bootstrap:
     form:
-        show_legend: false # default is true
+        show_legend: false # Display form title (legend field).
 
 # Yoghurt specific configuration
 spoiled_milk_yoghurt:
