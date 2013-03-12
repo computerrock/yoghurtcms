@@ -1,17 +1,17 @@
-# Bootstrap
-app/bootstrap*
+# Symfony recommended ignores
+/web/bundles/
+/app/bootstrap*
+/app/cache/*
+/app/logs/*
+/vendor/
+/app/config/*.yml
 
-# Symfony directories
-vendor/*
-*/logs/*
-*/cache/*
+# Yoghurt uploads
 web/uploads/*
-web/bundles/*
 
-# Configuration files
-app/config/parameters.ini
+# Composer
 /composer.lock
 /composer.phar
 
-# Net Beans project folder
+# IDE folders
 /nbproject
