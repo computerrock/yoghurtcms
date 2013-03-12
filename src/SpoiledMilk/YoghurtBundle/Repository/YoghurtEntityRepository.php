@@ -97,24 +97,24 @@ class YoghurtEntityRepository extends EntityRepository {
                         ->getQuery()
                         ->getResult();
     }
-    
+
     /**
      * @param integer $status
      * @return array
      */
     public function fetchAllByStatus($status) {
         if (!is_int($status))
-            throw new \UnexpectedValueException('status must be an integer, "' . $status . '" given.' );
-        
+            throw new \UnexpectedValueException('status must be an integer, "' . $status . '" given.');
+
         return $this->_em->createQueryBuilder()
-                ->select('e')
-                ->from('SpoiledMilkYoghurtBundle:Entity', 'e')
-                ->where('e.status = :status')
-                ->setParameter('status', $status)
-                ->getQuery()
-                ->getResult();
+                        ->select('e')
+                        ->from('SpoiledMilkYoghurtBundle:Entity', 'e')
+                        ->where('e.status = :status')
+                        ->setParameter('status', $status)
+                        ->getQuery()
+                        ->getResult();
     }
-    
+
     /**
      * Reduces the given Entity's position by swaping it with the Entity above it
      * (Entity with lesser position)
@@ -122,7 +122,7 @@ class YoghurtEntityRepository extends EntityRepository {
      * @param \SpoiledMilk\YoghurtBundle\Entity\Entity $entity
      */
     public function moveUp(\SpoiledMilk\YoghurtBundle\Entity\Entity $entity) {
-        
+
         /* Get Entities of the same Type, with positions less than the given
          * Entity's position, ordered so that the closes one is firs on the top.
          */
@@ -131,10 +131,10 @@ class YoghurtEntityRepository extends EntityRepository {
             where e.position < :pos 
             and et.id = :etid
             order by e.position desc';
-        
+
         $this->swapPositions($entity, $dql);
     }
-    
+
     /**
      * Increases the given Entity's position by swaping it with the Entity below it
      * (Entity with greater position)
@@ -150,10 +150,20 @@ class YoghurtEntityRepository extends EntityRepository {
             where e.position > :pos 
             and et.id = :etid
             order by e.position asc';
-        
+
         $this->swapPositions($entity, $dql);
     }
-    
+
+    public function generateSlug($entityTitle) {
+        $slug = \SpoiledMilk\YoghurtBundle\Services\UtilityService::slugify($entityTitle);
+        $dql = 'select e from SpoiledMilkYoghurtBundle:Entity e where e.slug = :slug';
+        $query = $this->_em
+                ->createQuery($dql)
+                ->setParameter('slug', $slug);
+        $count = sizeof($query->getResult());
+        return $slug . ($count ? '-' . ++$count : '');
+    }
+
     /**
      * Gets the first Entity from the DQL query, and swaps it's position with
      * the given Entity's position
@@ -166,10 +176,10 @@ class YoghurtEntityRepository extends EntityRepository {
                 ->setParameter('pos', $entity->getPosition())
                 ->setParameter('etid', $entity->getEntityType()->getId())
                 ->getResult();
-        
+
         if (!$result)
             return;
-        
+
         $other = $result[0];
         $otherPos = $other->getPosition();
         $other->setPosition($entity->getPosition());

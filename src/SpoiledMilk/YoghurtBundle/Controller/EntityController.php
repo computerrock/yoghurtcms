@@ -76,12 +76,7 @@ class EntityController extends DefaultController {
         if ($form->isValid()) {
 
             if (!$entity->getSlug()) {
-                $slug = UtilityService::slugify($entity->getTitle());
-                $dql = 'select e from SpoiledMilkYoghurtBundle:Entity e where e.slug like :slug';
-                $query = $this->getDoctrine()->getManager()
-                                ->createQuery($dql)->setParameter('slug', $slug . '%');
-                $count = sizeof($query->getResult());
-                $entity->setSlug($slug . ($count ? '-' . ++$count : ''));
+                $entity->setSlug($em->getRepository('SpoiledMilkYoghurtBundle:Entity')->generateSlug($entity->getTitle()));
             }
             
             if (!$entity->getPosition()) {
@@ -172,12 +167,7 @@ class EntityController extends DefaultController {
         if ($editForm->isValid()) {
 
             if (!$entity->getSlug()) {
-                $slug = UtilityService::slugify($entity->getTitle());
-                $dql = 'select e from SpoiledMilkYoghurtBundle:Entity e where e.slug = :slug';
-                $query = $this->getDoctrine()->getManager()
-                                ->createQuery($dql)->setParameter('slug', $slug);
-                $count = sizeof($query->getResult());
-                $entity->setSlug($slug . ($count ? '-' . ++$count : '') );
+                $entity->setSlug($em->getRepository('SpoiledMilkYoghurtBundle:Entity')->generateSlug($entity->getTitle()));
             }
             
             if (!$entity->getPosition()) {
