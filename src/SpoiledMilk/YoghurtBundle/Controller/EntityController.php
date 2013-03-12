@@ -271,38 +271,6 @@ class EntityController extends DefaultController {
 
         return $this->redirect($url);
     }
-    
-    /**
-     * @Route("/reorder", name="yoghurt_entity_reorder")
-     * @Method("post")
-     */
-    public function ajaxReorderAction() {
-        $oldOrder = $this->getRequest()->get('oldOrder');
-        $oldOrder = explode(',', $oldOrder);
-        
-        $newOrder = $this->getRequest()->get('newOrder');
-        $newOrder = explode(',', $newOrder);
-        
-        $em = $this->getDoctrine()->getManager();
-        $repo = $em->getRepository('SpoiledMilkYoghurtBundle:Entity');
-        
-        for ($i = 0; $i < count($oldOrder); $i++) {
-            $entity = $repo->find($oldOrder[$i]);
-            $newPos = array_search($oldOrder[$i], $newOrder);
-            $delta = $newPos - $i;
-            
-            if ($delta) {
-                $entity->setPosition($entity->getPosition() + $delta);
-                $em->persist($entity);
-            }
-        }
-        
-        $em->flush();
-        $ret = new \Symfony\Component\HttpFoundation\Response();
-        $ret->headers->set('Content-Type', 'text/plain');
-        $ret->setContent('ok');
-        return $ret;
-    }
 
     /**
      * @Route("/{entityId}/addFieldValue/{fieldId}", name="yoghurt_entity_addFieldValue")

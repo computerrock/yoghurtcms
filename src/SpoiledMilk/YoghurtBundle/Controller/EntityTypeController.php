@@ -187,38 +187,6 @@ class EntityTypeController extends DefaultController {
 
         return $this->redirect($this->generateUrl('yoghurt_entitytype'));
     }
-    
-    /**
-     * @Route("/reorder", name="yoghurt_entitytype_reorder")
-     * @Method("post")
-     */
-    public function ajaxReorderAction() {
-        $oldOrder = $this->getRequest()->get('oldOrder');
-        $oldOrder = explode(',', $oldOrder);
-        
-        $newOrder = $this->getRequest()->get('newOrder');
-        $newOrder = explode(',', $newOrder);
-        
-        $em = $this->getDoctrine()->getManager();
-        $repo = $em->getRepository('SpoiledMilkYoghurtBundle:EntityType');
-        
-        for ($i = 0; $i < count($oldOrder); $i++) {
-            $entityType = $repo->find($oldOrder[$i]);
-            $newPos = array_search($oldOrder[$i], $newOrder);
-            $delta = $newPos - $i;
-            
-            if ($delta != 0) {
-                $entityType->setPosition($entityType->getPosition() + $delta);
-                $em->persist($entityType);
-            }
-        }
-        
-        $em->flush();
-        $ret = new \Symfony\Component\HttpFoundation\Response();
-        $ret->headers->set('Content-Type', 'text/plain');
-        $ret->setContent('ok');
-        return $ret;
-    }
 
     /**
      * 

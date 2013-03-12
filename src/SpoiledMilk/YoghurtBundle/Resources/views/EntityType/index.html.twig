@@ -82,43 +82,5 @@
         </div>
     </form>
 </div>
- 
-<script>
-    $(function() {
-        $("#entityTableBody").sortable();
-        $("#entityTableBody").disableSelection();
-    });
-    
-    var oldPositions = null;
-    var newPositions = null;
-    var loading = '<img src="{{ asset('bundles/spoiledmilkyoghurt/images/loading.gif') }}" style="float: right" />';
-    
-    $('#entityTableBody').sortable({
-        start: function(event, ui) {
-            oldPositions = $(this).sortable('toArray').join(',');
-            orderButtons = $(this).children[0];
-        },
-        update: function(event, ui) {
-            var item = ui.item;
-            var name = item.context.cells[1].innerHTML;
-            var ok = '<i id="ajax-ok-' + item.attr('id') + '" class="icon-ok" style="float: right"></i>';
-            item.context.cells[1].innerHTML = name + loading;
-            newPositions = $(this).sortable('toArray').join(',');
-            
-            $.ajax({
-                url: '{{ path('yoghurt_entitytype_reorder') }}',
-                type: 'POST',
-                data: {
-                    'oldOrder': oldPositions,
-                    'newOrder': newPositions,
-                },
-                complete: function(event) {
-                    setTimeout(function() { item.context.cells[1].innerHTML = name + ok; }, 1000);
-                    setTimeout(function() { $('#ajax-ok-' + item.attr('id')).toggle('highlight', {}, 1000); }, 1700);
-                }
-            });
-        }
-    });
-</script>
 
 {% endblock %}
