@@ -80,7 +80,7 @@ class EntityController extends DefaultController {
             }
             
             if (!$entity->getPosition()) {
-                $entity->setPosition($this->getMaxPositionForEntityType($entityType) + 1);
+                $entity->setPosition($em->getRepository('SpoiledMilkYoghurtBundle:Entity')->getMaxPositionForEntityType($entityType) + 1);
             }
 
             $this->uploadFiles(array(), $entity);
@@ -171,7 +171,7 @@ class EntityController extends DefaultController {
             }
             
             if (!$entity->getPosition()) {
-                $entity->setPosition($this->getMaxPositionForEntityType($entity->getEntityType()) + 1);
+                $entity->setPosition($em->getRepository('SpoiledMilkYoghurtBundle:Entity')->getMaxPositionForEntityType($entity->getEntityType()) + 1);
             }
 
             $entity->setModified(new \DateTime());

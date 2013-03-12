@@ -171,7 +171,7 @@ class YoghurtEntityRepository extends EntityRepository {
         $count = sizeof($query->getResult());
         return $slug . ($count ? '-' . ++$count : '');
     }
-    
+
     /**
      * Returns the date and time of the last modification in the database's 
      * preffered format. For MySql it's: year-monht-day hour:minute:second
@@ -182,6 +182,39 @@ class YoghurtEntityRepository extends EntityRepository {
     public function getLastModifiedDateTime() {
         $dql = 'select max(e.modified) from SpoiledMilkYoghurtBundle:Entity e';
         return $this->_em->createQuery($dql)->getSingleScalarResult();
+    }
+
+    /**
+     * Returns the maximal Entity position value for the given EntityType
+     * 
+     * @param integer|string|\SpoiledMilk\YoghurtBundle\Entity\EntityType $entityType
+     * @return integer
+     */
+    public function getMaxPositionForEntityType($entityType) {
+        $dql = 'select max(e.position) from SpoiledMilkYoghurtBundle:Entity e join e.entityType et';
+        $param = 0;
+
+        try {
+            if ($entityType instanceof \SpoiledMilk\YoghurtBundle\Entity\EntityType) {
+                $dql .= ' where et.id = :param';
+                $param = $entityType->getId();
+            } else if (is_numeric($entityType)) {
+                $dql .= ' where et.id = :param';
+                $param = $entityType;
+            } else {
+                $dql .= ' where et.slug = :param';
+                $param = $entityType;
+            }
+
+            $res = $this->_em
+                    ->createQuery($dql)
+                    ->setParameter('param', $param)
+                    ->getSingleScalarResult();
+        } catch (\Doctrine\ORM\Query\QueryException $ex) {
+            $res = 0;
+        }
+
+        return $res;
     }
 
     /**
