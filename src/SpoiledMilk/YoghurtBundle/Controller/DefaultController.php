@@ -32,42 +32,6 @@ class DefaultController extends Controller {
 
         return $errors;
     }
-
-    /**
-     * Swaps positions of two elements in array, and returns an array of
-     * db entities that need to be persisted
-     * 
-     * @param array $array
-     * @param object $array[$i] 
-     * @param sting $dir up or down
-     * @return array
-     */
-    public function swapPositions(&$array, $id, $dir) {
-        $ret = array();
-
-        for ($i = 0; $i < count($array); $i++) {
-            if ($array[$i]->getId() != $id) {
-                continue;
-            } else {
-                if ($dir == 'up' && $i > 0) {
-                    $ret = array(&$array[$i], &$array[$i - 1]);
-                } else if ($dir == 'down' && $i < count($array) - 1) {
-                    $ret = array(&$array[$i], &$array[$i + 1]);
-                }
-
-                break;
-            }
-        }
-
-        if (count($ret) > 0) {
-            $pos0 = $ret[0]->getPosition();
-            $pos1 = $ret[1]->getPosition();
-            $ret[0]->setPosition($pos1);
-            $ret[1]->setPosition($pos0);
-        }
-
-        return $ret;
-    }
     
     /**
      * @param integer|string|\SpoiledMilk\YoghurtBundle\Entity\EntityType $entityType
