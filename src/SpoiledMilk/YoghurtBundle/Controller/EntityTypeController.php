@@ -169,22 +169,23 @@ class EntityTypeController extends DefaultController {
 
     /**
      * 
-     * @Route("/order/{direction}/{id}", name="yoghurt_entitytype_order")
+     * @Route("/order/{direction}/{id}", 
+     *    name="yoghurt_entitytype_order",
+     *    requirements={"direction"="up|down"})
      */
     public function orderEntityTypeAction($id, $direction) {
-        $types = $this->getEntityTypes();
-        $changed = $this->swapPositions($types, $id, $direction);
-
-        if ($changed) {
-            $em = $this->getDoctrine()->getManager();
-
-            foreach ($changed as $value) {
-                $em->persist($value);
-            }
-
-            $em->flush();
+        $repo = $this->getDoctrine()->getRepository('SpoiledMilkYoghurtBundle:EntityType');
+        $entityType = $repo->find($id);
+        
+        if (!$entityType) {
+            throw $this->createNotFoundException('EntityType not found!');
         }
-
+        
+        if ($direction == 'up')
+            $repo->moveUp($entityType);
+        else
+            $repo->moveDown($entityType);
+        
         return $this->redirect($this->generateUrl('yoghurt_entitytype'));
     }
 
