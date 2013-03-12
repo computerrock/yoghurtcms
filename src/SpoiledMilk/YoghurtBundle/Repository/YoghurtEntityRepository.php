@@ -154,6 +154,14 @@ class YoghurtEntityRepository extends EntityRepository {
         $this->swapPositions($entity, $dql);
     }
 
+    /**
+     * Generates a slug for the given title. First, it sluggifies the title, then
+     * if the slug is already in use by some other entity, it adds a number to 
+     * the generated value.
+     * 
+     * @param string $entityTitle
+     * @return string
+     */
     public function generateSlug($entityTitle) {
         $slug = \SpoiledMilk\YoghurtBundle\Services\UtilityService::slugify($entityTitle);
         $dql = 'select e from SpoiledMilkYoghurtBundle:Entity e where e.slug = :slug';
@@ -162,6 +170,18 @@ class YoghurtEntityRepository extends EntityRepository {
                 ->setParameter('slug', $slug);
         $count = sizeof($query->getResult());
         return $slug . ($count ? '-' . ++$count : '');
+    }
+    
+    /**
+     * Returns the date and time of the last modification in the database's 
+     * preffered format. For MySql it's: year-monht-day hour:minute:second
+     * 
+     * @return string String (year-monht-day hour:minute:second) or null if no
+     * entities exist in the database.
+     */
+    public function getLastModifiedDateTime() {
+        $dql = 'select max(e.modified) from SpoiledMilkYoghurtBundle:Entity e';
+        return $this->_em->createQuery($dql)->getSingleScalarResult();
     }
 
     /**

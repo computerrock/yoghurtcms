@@ -24,8 +24,9 @@ class IndexController extends DefaultController {
             $this->getDoctrine()->getManager()->flush();
         }
         
-        $dql = 'select max(e.modified) from SpoiledMilkYoghurtBundle:Entity e';
-        $lastModified = $this->getDoctrine()->getManager()->createQuery($dql)->getSingleScalarResult();
+        $lastModified = $this->getDoctrine()
+                ->getRepository('SpoiledMilkYoghurtBundle:Entity')
+                ->getLastModifiedDateTime();
         return array(
             'publishing' => $publishing,
             'lastModified' => $lastModified
