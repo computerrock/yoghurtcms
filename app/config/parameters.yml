@@ -1,18 +1,1 @@
-parameters:
-    database_driver: pdo_mysql
-    database_host: 127.0.0.1
-    database_port:
-    database_name: yoghurt
-    database_user: yoghurt
-    database_password: 5tpA6aTGEwwT494k
-
-    mailer_transport:  smtp
-    mailer_host:       localhost
-    mailer_user:       ~
-    mailer_password:   ~
-
-    locale:            en
-    secret:            D44Rmq8242975Ah6GDY2Ml8wdZ8mEB
-
-    # yoghurt specific params
-    yoghurt.upload_dir: uploads
+parameters: ~
