@@ -216,6 +216,31 @@ class YoghurtEntityRepository extends EntityRepository {
 
         return $res;
     }
+    
+    /**
+     * Copies positions of the startOrder into the newOrder, and returns those
+     * positions as and array
+     * 
+     * @param array $startOrder Array of Entity IDs, in original order
+     * @param array $newOrder Array of Entity IDs, in changed order
+     * @return array Array of positions
+     */
+    public function reorder($startOrder, $newOrder) {
+        $startPositions = array();
+        
+        foreach ($startOrder as $id) {
+            $startPositions[] = $this->find($id)->getPosition();
+        }
+        
+        for($i = 0; $i < count($newOrder); $i++) {
+            $entity = $this->find($newOrder[$i]);
+            $entity->setPosition($startPositions[$i]);
+            $this->_em->persist($entity);
+        }
+        
+        $this->_em->flush();
+        return $startPositions;
+    }
 
     /**
      * Gets the first Entity from the DQL query, and swaps it's position with

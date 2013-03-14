@@ -369,6 +369,35 @@ class EntityController extends DefaultController {
             return $this->redirect($this->generateUrl('yoghurt_entitytype_show', array('id' => $entity->getEntityType()->getId())));
         }
     }
+    
+    /**
+     * This method is called via AJAX when the user reorders Entities using 
+     * drag'n'drop method. It receives the following data in the POST request:<br/>
+     * startOrder - (comma delimited string) Array of entity IDs, in the original order<br/>
+     * newOrder   - (comma delimited string) Array of entity IDs, now reordered by the user<br/>
+     * 
+     * The method returns a JSON array containing the IDs of
+     * Entities, in the new order
+     * 
+     * @Route("/reorder", name="yoghurt_entity_reorder")
+     * @Method("post")
+     */
+    public function reorderAction(\Symfony\Component\HttpFoundation\Request $request) {
+        $startOrder = explode(',', $request->request->get('startOrder'));
+        $newOrder = explode(',', $request->request->get('newOrder'));
+        
+        if (count($startOrder) != count($newOrder))
+            throw new \Exception('Start and New order arrays must have the same number of elements');
+        
+        $newPositions = $this->getDoctrine()
+                ->getRepository('SpoiledMilkYoghurtBundle:Entity')
+                ->reorder($startOrder, $newOrder);
+        
+        $response = new \Symfony\Component\HttpFoundation\Response();
+        $response->headers->set('Content-Type', 'application/json');
+        $response->setContent('{"newOrder":' . json_encode($newPositions) . '}');
+        return $response;
+    }
 
     // Here be utility functions!
 

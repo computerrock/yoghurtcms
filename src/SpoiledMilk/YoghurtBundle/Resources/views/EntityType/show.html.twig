@@ -158,6 +158,58 @@
             cb.prop('checked', false);
         }
     }
+    
+    $(document).ready(function() {
+        var startOrder;
+        var imgLoading = '<img id="ajax-reorder-loading" src="{{ asset('bundles/spoiledmilkyoghurt/images/loading.gif') }}" style="float: right" />';
+        var imgOk = '<i id="ajax-reorder-ok" class="icon-ok" style="float: right"></i>';
+        
+        $('#entityTableBody').disableSelection();
+        $('#entityTableBody').sortable({
+            'axis': 'y',
+            'start': function(evt, ui) {
+                startOrder = $(this).sortable('toArray').join(',');
+            },
+            'update': function(ect, ui) {
+                var itemNameColumn = $(ui.item.context.cells[3]);
+                itemNameColumn.append(imgLoading);
+                
+                $.ajax({
+                    url: '{{ path('yoghurt_entity_reorder') }}?XDEBUG_SESSION_START=netbeans-xdebug',
+                    type: 'POST',
+                    data: {
+                        'startOrder': startOrder,
+                        'newOrder': $(this).sortable('toArray').join(',')
+                    },
+                    success: function(data) {
+                        // Replace "loader" icon with "ok" icon
+                        setTimeout(function() {
+                                $('#ajax-reorder-loading').remove();
+                                itemNameColumn.append(imgOk);
+                            }, 1000);
+                        
+                        // Remove "ok" icon
+                        setTimeout(function() { 
+                                $('#ajax-reorder-ok').toggle('highlight', {}, 800, function() {
+                                    $('#ajax-reorder-ok').remove();
+                                }); 
+                            }, 1700);
+                        
+                        // Update "Position" column
+                        var rows = $('#entityTableBody tr');
+                        
+                        for(var i = 0; i < data.newOrder.length; i++) {
+                            rows[i].cells[2].innerHTML = data.newOrder[i];
+                        }
+                    },
+                    error: function() {
+                        alert('An error occured on the server.\nThe page will reload.');
+                        window.location.reload(false);
+                    }
+                });
+            }
+        });
+    });
 
 </script>
 
