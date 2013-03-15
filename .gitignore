@@ -2,9 +2,7 @@
 /web/bundles/
 /app/bootstrap*
 /app/cache/*
-/app/logs/*
 /vendor/
-/app/config/*.yml
 
 # Yoghurt uploads
 web/uploads/*
@@ -15,3 +13,7 @@ web/uploads/*
 
 # IDE folders
 /nbproject
+
+# Other
+/app/config/*.yml
+*.log
