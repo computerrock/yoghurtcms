@@ -1,7 +1,7 @@
 {
     "name": "spoiledmilk/yoghurt",
     "description": "A lightweight CMS backend",
-    "version": "0.1.0-dev",
+    "version": "1.0.0-beta",
     "keywords": ["CMS", "Backend", "Yoghurt", "Spoiled", "Milk", "Symfony", "Doctrine"],
     "license": "MIT",
     "authors": [
