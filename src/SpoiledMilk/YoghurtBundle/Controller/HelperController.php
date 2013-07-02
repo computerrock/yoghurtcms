@@ -20,42 +20,42 @@ class HelperController extends DefaultController {
     }
 
     /**
-     * @Template 
+     * @Template
      */
     public function leftMenuAction($requestUrl) {
-        $requestUrl = str_replace('http://y2.local', '', $requestUrl);
+        $requestUrl = substr($requestUrl, stripos($requestUrl, '/admin'));
         $entityTypes = $this->getEntityTypes();
         $activeIndex = -1;
 
         if (stripos($requestUrl, '/admin/user') === 0) {
 
             $activeIndex = 'user';
-            
+
         } else if (stripos($requestUrl, '/admin/vocabulary') === 0
                 || stripos($requestUrl, '/admin/term') === 0) {
 
             $activeIndex = 'vocabulary';
-            
+
         } else if (stripos($requestUrl, '/admin/entitytype') === 0) {
 
             if (stripos($requestUrl, '/admin/entitytype/show') === 0) {
-                
+
                 $typeId = explode('/', $requestUrl);
                 $activeIndex = $typeId[count($typeId) - 1];
-                
+
             } else if (stripos($requestUrl, '/admin/entitytype/edit') === 0
                     || stripos($requestUrl, '/admin/entitytype/new') === 0
                     || $requestUrl == '/admin/entitytype/') {
-                
+
                 $activeIndex = 'entityType';
-                
+
             }
-            
+
         } else if (stripos($requestUrl, '/admin/entity/new') === 0) {
-            
+
             $typeId = explode('/', $requestUrl);
             $activeIndex = $typeId[count($typeId) - 1];
-            
+
         } else if (stripos($requestUrl,'/admin/entity/edit') === 0) {
             // get the entity's id
             $entityId = explode('/', $requestUrl);
@@ -69,7 +69,9 @@ class HelperController extends DefaultController {
             if ($entity) {
                 $activeIndex = $entity->getEntityType()->getId();
             }
-            
+
+        } else if (stripos($requestUrl, '/admin/fieldmeta') === 0) {
+            $activeIndex = 'entityType';
         } else if (stripos($requestUrl, '/admin') === 0) {
             $activeIndex = 'publishing';
         }
@@ -79,15 +81,15 @@ class HelperController extends DefaultController {
             'activeIndex' => "$activeIndex",
         );
     }
-    
+
     /**
      * @Template
      * @param \SpoiledMilk\YoghurtBundle\Entity\Entity $entity
      * @return array
-     * @throws \Exception 
+     * @throws \Exception
      */
-    public function statusButtonAction($entity, $back) {        
-        
+    public function statusButtonAction($entity, $back) {
+
         switch ($entity->getStatus()) {
             case \SpoiledMilk\YoghurtBundle\Entity\Entity::STATUS_ENABLED:
                 $buttons = array(
