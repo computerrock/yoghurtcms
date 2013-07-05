@@ -9,20 +9,6 @@ use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 class EntityType extends AbstractType {
 
     public function buildForm(FormBuilderInterface $builder, array $options) {
-        $hasVocabularies = false;
-        $termsRequired = false;
-        $vocabularyIds = null;
-
-        if ($options['entityTypeVocabularies']) {
-            $hasVocabularies = true;
-            $vocabularyIds = array();
-
-            foreach ($options['entityTypeVocabularies'] as $etv) {
-                $termsRequired = $termsRequired || $etv->getMandatory();
-                $vocabularyIds[] = $etv->getVocabulary()->getId();
-            }
-        }
-
         $builder
                 ->add('title')
                 ->add('slug', 'text', array('required' => false))
@@ -35,32 +21,16 @@ class EntityType extends AbstractType {
                         \SpoiledMilk\YoghurtBundle\Entity\Entity::STATUS_ENABLED => 'Enabled',
                         \SpoiledMilk\YoghurtBundle\Entity\Entity::STATUS_TEST => 'Test'
                     )
-                ));
-
-        if ($hasVocabularies) {
-            $builder->add('terms', 'entity', array(
-                'required' => $termsRequired,
-                'class' => 'SpoiledMilkYoghurtBundle:Term',
-                'multiple' => true,
-                'property' => 'indentedTerm',
-                'query_builder' => function(\Doctrine\ORM\EntityRepository $er) use ($vocabularyIds) {
-                    $qb = $er->createQueryBuilder('t');
-                    if ($vocabularyIds) {
-                        $qb->add('where', $qb->expr()->in('t.vocabulary', $vocabularyIds));
-                    }
-                    return $qb;
-                },
-            ));
-        }
-
-        $builder->add('fieldValues', 'collection', array(
-            'type' => new FieldValueType()));
+                ))
+                ->add('vocabularyTerms', 'hidden', array('mapped' => false))
+                ->add('fieldValues', 'collection', array(
+                    'type' => new FieldValueType()));
     }
 
     public function getName() {
         return 'spoiledmilk_yoghurtbundle_entitytype';
     }
-    
+
     public function setDefaultOptions(OptionsResolverInterface $resolver) {
         $resolver->setDefaults(array(
             'data_class' => 'SpoiledMilk\YoghurtBundle\Entity\Entity',

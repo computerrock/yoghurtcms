@@ -15,6 +15,7 @@
         <div class="span12">
             <form action="{{ path('yoghurt_entity_update', { 'id': entity.id }) }}"
                 method="post"
+                id="main_form"
                 novalidate="novalidate"
                 {{ form_enctype(edit_form) }}>
 
@@ -23,10 +24,7 @@
                 {{ form_row(edit_form.status) }}
                 {{ form_row(edit_form.position) }}
 
-                {% if edit_form.terms is defined %}
-                    {{ form_row(edit_form.terms) }}
-                {% endif %}
-
+                {{ form_row(edit_form.vocabularyTerms) }}
                 {{ form_row(edit_form._token) }}
 
                 {% if repeating_forms %}
@@ -70,6 +68,32 @@
                     </div>
                 {% endfor %}
 
+                {% if entity.entityType.entityTypeVocabularies | length > 0%}
+                    <legend>Vocabularies</legend>
+
+                    {% for etv in entity.entityType.entityTypeVocabularies %}
+                        <div class="control-group {% if not etv.mandatory %}optional{% endif %}">
+                            <label for="vocabulary{{ etv.vocabulary.id }}"
+                                   class="control-label ">
+                                {{ etv.vocabulary.name }}
+                                {% if not etv.mandatory %}(Optional){% endif %}
+                            </label>
+
+                            <div class="controls">
+                                <select id="vocabulary{{ etv.vocabulary.id }}"
+                                        name="vocabulary{{ etv.vocabulary.id }}"
+                                        multiple="multiple"
+                                        class="vocabulary">
+
+                                    {% for term in etv.vocabulary.terms %}
+                                        <option value="{{ term.id }}" {% if term in entity.terms%}selected="selected"{% endif %}>{{ term.term }}</option>
+                                    {% endfor %}
+
+                                </select>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% endif %}
                 <div class="form-actions">
                     <button type="submit" class="btn btn-primary">Save</button>
                     <a class="btn" href="{{ path('yoghurt_entitytype_show', {'id': entity.entityType.id}) }}">Cancel</a>
@@ -109,5 +133,9 @@
         </form>
     </div>
 {% endfor %}
+
+<link href="{{ asset('bundles/spoiledmilkyoghurt/select2/select2.css') }}" rel="stylesheet" />
+<script src="{{ asset('bundles/spoiledmilkyoghurt/select2/select2.min.js') }}"></script>
+<script src="{{ asset('bundles/spoiledmilkyoghurt/js/entity_form.js') }}"></script>
 
 {% endblock %}

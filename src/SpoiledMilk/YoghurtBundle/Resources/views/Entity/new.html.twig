@@ -9,20 +9,20 @@
     <h1>New {{ entity.entityType.name }}</h1>
 </div>
 
-<form action="{{ path('yoghurt_entity_create', {'type_id': entity.entityType.id}) }}" 
-      method="post" 
+<form action="{{ path('yoghurt_entity_create', {'type_id': entity.entityType.id}) }}"
+      id="main_form"
+      method="post"
       novalidate="novalidate"
       {{ form_enctype(form) }}>
-    
+
     {{ form_row(form.title) }}
     {{ form_row(form.slug) }}
     {{ form_row(form.status) }}
     {{ form_row(form.position) }}
-    {% if form.terms is defined %}
-        {{ form_row(form.terms) }}
-    {% endif %}
+
+    {{ form_row(form.vocabularyTerms) }}
     {{ form_row(form._token) }}
-    
+
     {% for key, fv in form.fieldValues %}
         <div class="control-group">
             {{ form_label(fv.value) }}
@@ -36,12 +36,40 @@
             </div>
         </div>
     {% endfor %}
-    
-    <button type="submit" class="btn btn-primary">Create</button>
-    
-    <button type="submit" onclick="addNext(this.form)" class="btn btn-primary">Create &amp; new</button>
+
+    {% if entity.entityType.entityTypeVocabularies | length > 0 %}
+        <legend>Vocabularies</legend>
+
+        {% for etv in entity.entityType.entityTypeVocabularies %}
+            <div class="control-group {% if not etv.mandatory %}optional{% endif %}">
+                <label for="vocabulary{{ etv.vocabulary.id }}"
+                       class="control-label ">
+                    {{ etv.vocabulary.name }}
+                    {% if not etv.mandatory %}(Optional){% endif %}
+                </label>
+
+                <div class="controls">
+                    <select id="vocabulary{{ etv.vocabulary.id }}"
+                            name="vocabulary{{ etv.vocabulary.id }}"
+                            multiple="multiple"
+                            class="vocabulary">
+
+                        {% for term in etv.vocabulary.terms %}
+                            <option value="{{ term.id }}" {% if term in entity.terms%}selected="selected"{% endif %}>{{ term.term }}</option>
+                        {% endfor %}
+
+                    </select>
+                </div>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Create</button>
+        <button type="submit" onclick="addNext(this.form)" class="btn btn-primary">Create &amp; new</button>
+    </div>
 </form>
- 
+
 <script>
     function addNext(form) {
         var action = form.getAttribute('action');
@@ -49,5 +77,9 @@
         form.setAttribute('action', action);
     }
 </script>
+
+<link href="{{ asset('bundles/spoiledmilkyoghurt/select2/select2.css') }}" rel="stylesheet" />
+<script src="{{ asset('bundles/spoiledmilkyoghurt/select2/select2.min.js') }}"></script>
+<script src="{{ asset('bundles/spoiledmilkyoghurt/js/entity_form.js') }}"></script>
 
 {% endblock %}

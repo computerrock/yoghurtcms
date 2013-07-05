@@ -11,7 +11,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  * @ORM\Entity()
  */
 class Vocabulary {
-    
+
     /**
      * @var integer
      *
@@ -20,14 +20,14 @@ class Vocabulary {
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
     private $id;
-    
+
     /**
      * @var string
      *
      * @ORM\Column(type="string", length=255, unique=true)
      */
     private $name;
-    
+
     /**
      * @var string
      *
@@ -35,25 +35,25 @@ class Vocabulary {
      * @Assert\NotBlank
      */
     private $slug;
-    
+
     /**
      * @var \Doctrine\Common\Collections\ArrayCollection
      * @ORM\OneToMany(targetEntity="Term", mappedBy="vocabulary", cascade={"all"})
      * @ORM\OrderBy({"term"="ASC"})
      */
     private $terms;
-    
+
     /**
      * @var \Doctrine\Common\Collections\ArrayCollection
      * @ORM\OneToMany(targetEntity="EntityTypeVocabulary", mappedBy="vocabulary", cascade={"all"})
      */
     private $entityTypeVocabularies;
-    
+
     function __construct() {
         $this->terms = new ArrayCollection();
         $this->entityTypeRelationships = new ArrayCollection();
     }
-    
+
     public function getId() {
         return $this->id;
     }
@@ -93,9 +93,12 @@ class Vocabulary {
     public function setEntityTypeVocabularies($entityTypeVocabularies) {
         $this->entityTypeVocabularies = $entityTypeVocabularies;
     }
-    
+
     public function addEntityTypeVocabulary($entityTypeVocabulary) {
         $this->entityTypeVocabularies[] = $entityTypeVocabulary;
+    }
+
+    public function removeEntityTypeVocabulary($entityTypeVocabulary) {
     }
 
 

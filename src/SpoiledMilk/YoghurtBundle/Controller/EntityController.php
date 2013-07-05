@@ -2,12 +2,15 @@
 
 namespace SpoiledMilk\YoghurtBundle\Controller;
 
+use DateTime;
+use Exception;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use SpoiledMilk\YoghurtBundle\Entity as Entity;
 use SpoiledMilk\YoghurtBundle\Form as Form;
-use SpoiledMilk\YoghurtBundle\Services\UtilityService;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Entity controller.
@@ -15,7 +18,7 @@ use SpoiledMilk\YoghurtBundle\Services\UtilityService;
  * @Route("/entity")
  */
 class EntityController extends DefaultController {
-    
+
     /**
      * Displays a form to create a new Entity.
      *
@@ -33,13 +36,7 @@ class EntityController extends DefaultController {
         $entity = new Entity\Entity();
         $entity->setEntityType($entityType);
         $this->addFieldValues($entity);
-
-        $formOpts = array();
-        if ($entity->getEntityType()->getEntityTypeVocabularies()->toArray()) {
-            $formOpts['entityTypeVocabularies'] = $entity->getEntityType()->getEntityTypeVocabularies()->toArray();
-        }
-
-        $form = $this->createForm(new Form\EntityType(), $entity, $formOpts);
+        $form = $this->createForm(new Form\EntityType(), $entity);
         return array(
             'entity' => $entity,
             'form' => $form->createView()
@@ -64,21 +61,17 @@ class EntityController extends DefaultController {
         $entity = new Entity\Entity();
         $entity->setEntityType($entityType);
         $this->addFieldValues($entity);
-
-        $formOpts = array();
-        if ($entity->getEntityType()->getEntityTypeVocabularies()->toArray()) {
-            $formOpts['entityTypeVocabularies'] = $entity->getEntityType()->getEntityTypeVocabularies()->toArray();
-        }
-
-        $form = $this->createForm(new Form\EntityType(), $entity, $formOpts);
-        $form->bindRequest($this->getRequest());
+        $form = $this->createForm(new Form\EntityType(), $entity);
+        $rawData = $this->getRequest()->get($form->getName());
+        $this->setTerms($entity, $rawData['vocabularyTerms']);
+        $form->bind($this->getRequest());
 
         if ($form->isValid()) {
 
             if (!$entity->getSlug()) {
                 $entity->setSlug($em->getRepository('SpoiledMilkYoghurtBundle:Entity')->generateSlug($entity->getTitle()));
             }
-            
+
             if (!$entity->getPosition()) {
                 $entity->setPosition($em->getRepository('SpoiledMilkYoghurtBundle:Entity')->getMaxPositionForEntityType($entityType) + 1);
             }
@@ -122,14 +115,9 @@ class EntityController extends DefaultController {
         }
 
         $this->addFieldValues($entity);
-        $formOpts = array();
-        if ($entity->getEntityType()->getEntityTypeVocabularies()->toArray()) {
-            $formOpts['entityTypeVocabularies'] = $entity->getEntityType()->getEntityTypeVocabularies()->toArray();
-        }
-
         $repeatingForms = $this->getRepeatingForms($entity);
-        $editForm = $this->createForm(new Form\EntityType(), $entity, $formOpts);
-        
+        $editForm = $this->createForm(new Form\EntityType(), $entity);
+
         return array(
             'entity' => $entity,
             'edit_form' => $editForm->createView(),
@@ -154,14 +142,10 @@ class EntityController extends DefaultController {
 
         $this->addFieldValues($entity);
         $existingFiles = $this->getFiles($entity);
-
-        $formOpts = array();
-        if ($entity->getEntityType()->getEntityTypeVocabularies()->toArray()) {
-            $formOpts['entityTypeVocabularies'] = $entity->getEntityType()->getEntityTypeVocabularies()->toArray();
-        }
-
-        $editForm = $this->createForm(new Form\EntityType(), $entity, $formOpts);
+        $editForm = $this->createForm(new Form\EntityType(), $entity);
         $request = $this->getRequest();
+        $rawData = $request->get($editForm->getName());
+        $this->setTerms($entity, $rawData['vocabularyTerms']);
         $editForm->bindRequest($request);
 
         if ($editForm->isValid()) {
@@ -169,12 +153,12 @@ class EntityController extends DefaultController {
             if (!$entity->getSlug()) {
                 $entity->setSlug($em->getRepository('SpoiledMilkYoghurtBundle:Entity')->generateSlug($entity->getTitle()));
             }
-            
+
             if (!$entity->getPosition()) {
                 $entity->setPosition($em->getRepository('SpoiledMilkYoghurtBundle:Entity')->getMaxPositionForEntityType($entity->getEntityType()) + 1);
             }
 
-            $entity->setModified(new \DateTime());
+            $entity->setModified(new DateTime());
             $this->uploadFiles($existingFiles, $entity);
             $em->persist($entity);
             $em->flush();
@@ -217,20 +201,20 @@ class EntityController extends DefaultController {
 
     /**
      * Moves the Entity up or down by one position
-     * 
-     * @Route("/order/{id}/{direction}", 
+     *
+     * @Route("/order/{id}/{direction}",
      *   name="yoghurt_entity_order",
      *   requirements={"direction" = "up|down"})
      */
     public function orderEntityAction($id, $direction) {
         $em = $this->getDoctrine()->getManager();
-        $repo = $em->getRepository('SpoiledMilkYoghurtBundle:Entity');        
+        $repo = $em->getRepository('SpoiledMilkYoghurtBundle:Entity');
         $entity = $repo->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Entity.');
         }
-        
+
         if ($direction == 'up')
             $repo->moveUp($entity);
         else
@@ -295,7 +279,7 @@ class EntityController extends DefaultController {
                 $fieldValue->setValue($fileName);
             }
 
-            $entity->setModified(new \DateTime());
+            $entity->setModified(new DateTime());
             $em->persist($fieldValue);
             $em->persist($entity);
             $em->flush();
@@ -328,26 +312,26 @@ class EntityController extends DefaultController {
         }
 
         $em->remove($fieldValue);
-        
+
         if ($fieldValue instanceof Entity\FileValue) {
             $this->get('yoghurt_service')->deleteFile($fieldValue->getValue());
         }
-        
-        $entity->setModified(new \DateTime());
+
+        $entity->setModified(new DateTime());
         $em->persist($entity);
         $em->flush();
         $this->getRequest()->getSession()->getFlashBag()->add('success', 'Value successfully removed');
         return $this->redirect($this->generateUrl('yoghurt_entity_edit', array('id' => $entityId)));
     }
-    
+
     /**
      * @Route("/status/{id}/{status}", name="yoghurt_entity_status")
      * , requirements={"status" = "\d"})
      */
     public function statusAction($id, $status) {
-        
+
         if ($status != Entity\Entity::STATUS_DISABLED && $status != Entity\Entity::STATUS_ENABLED && $status != Entity\Entity::STATUS_TEST) {
-            throw new \Exception('Unallowed status!');
+            throw new Exception('Unallowed status!');
         }
 
         $req = $this->getRequest();
@@ -362,38 +346,38 @@ class EntityController extends DefaultController {
         $em->persist($entity);
         $em->flush();
         $req->getSession()->getFlashBag()->add('success', 'Status successfully changed');
-        
+
         if ($req->get('back')) {
             return $this->redirect($req->get('back'));
         } else {
             return $this->redirect($this->generateUrl('yoghurt_entitytype_show', array('id' => $entity->getEntityType()->getId())));
         }
     }
-    
+
     /**
-     * This method is called via AJAX when the user reorders Entities using 
+     * This method is called via AJAX when the user reorders Entities using
      * drag'n'drop method. It receives the following data in the POST request:<br/>
      * startOrder - (comma delimited string) Array of entity IDs, in the original order<br/>
      * newOrder   - (comma delimited string) Array of entity IDs, now reordered by the user<br/>
-     * 
+     *
      * The method returns a JSON array containing the IDs of
      * Entities, in the new order
-     * 
+     *
      * @Route("/reorder", name="yoghurt_entity_reorder")
      * @Method("post")
      */
-    public function reorderAction(\Symfony\Component\HttpFoundation\Request $request) {
+    public function reorderAction(Request $request) {
         $startOrder = explode(',', $request->request->get('startOrder'));
         $newOrder = explode(',', $request->request->get('newOrder'));
-        
+
         if (count($startOrder) != count($newOrder))
-            throw new \Exception('Start and New order arrays must have the same number of elements');
-        
+            throw new Exception('Start and New order arrays must have the same number of elements');
+
         $newPositions = $this->getDoctrine()
                 ->getRepository('SpoiledMilkYoghurtBundle:Entity')
                 ->reorder($startOrder, $newOrder);
-        
-        $response = new \Symfony\Component\HttpFoundation\Response();
+
+        $response = new Response();
         $response->headers->set('Content-Type', 'application/json');
         $response->setContent('{"newOrder":' . json_encode($newPositions) . '}');
         return $response;
@@ -442,7 +426,7 @@ class EntityController extends DefaultController {
 
     /**
      * Adds the set prefix to the name of the uploaded file
-     * 
+     *
      * @param \SpoiledMilk\YoghurtBundle\Entity\FileValue $fileValue
      */
     private function checkPrefix(Entity\FileValue $fileValue) {
@@ -459,7 +443,7 @@ class EntityController extends DefaultController {
     /**
      * Returns a matrix of the following structure:
      *  [field_id, field_label, form]
-     * 
+     *
      * @param \SpoiledMilk\YoghurtBundle\Entity\Entity $entity
      * @return array
      */
@@ -504,7 +488,7 @@ class EntityController extends DefaultController {
 
     /**
      * Uploads files to server and sets fields accordingly
-     * 
+     *
      * @param array $existingFiles
      * @param \SpoiledMilk\YoghurtBundle\Entity\Entity $entity
      */
@@ -530,10 +514,10 @@ class EntityController extends DefaultController {
             }
         }
     }
-    
+
     /**
      * Deletes all files on server that are connected to the given Entity instance
-     * 
+     *
      * @param \SpoiledMilk\YoghurtBundle\Entity\Entity $entity
      */
     private function deleteFiles(Entity\Entity $entity) {
@@ -545,6 +529,21 @@ class EntityController extends DefaultController {
                 }
             }
         }
+    }
+
+    private function setTerms(Entity\Entity $entity, $termIds = '') {
+        if (!$termIds)
+            return;
+
+        $termIds = explode(',', $termIds);
+        $terms = array();
+        $termRepo = $this->getDoctrine()->getRepository('SpoiledMilkYoghurtBundle:Term');
+
+        foreach ($termIds as $termId) {
+            $terms[] = $termRepo->find($termId);
+        }
+
+        $entity->setTerms($terms);
     }
 
 }
