@@ -60,7 +60,7 @@ class UserController extends Controller {
         $entity = new User();
         $request = $this->getRequest();
         $form = $this->createForm(new UserType(), $entity);
-        $form->bindRequest($request);
+        $form->bind($request);
 
         if ($form->isValid()) {
             $encoder = $this->container
@@ -124,7 +124,7 @@ class UserController extends Controller {
         $editForm = $this->createForm(new UserType(), $entity);
         $editForm->remove('password');
         $request = $this->getRequest();
-        $editForm->bindRequest($request);
+        $editForm->bind($request);
         $entity->setPassword($oldPass);
 
         if ($editForm->isValid()) {

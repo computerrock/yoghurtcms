@@ -62,7 +62,7 @@ class EntityTypeController extends DefaultController {
         $entityType = new EntityType();
         $request = $this->getRequest();
         $form = $this->createForm(new EntityTypeType(), $entityType);
-        $form->bindRequest($request);
+        $form->bind($request);
 
         if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();
@@ -123,7 +123,7 @@ class EntityTypeController extends DefaultController {
         }
 
         $editForm = $this->createForm(new EntityTypeType(), $entityType);
-        $editForm->bindRequest($this->getRequest());
+        $editForm->bind($this->getRequest());
 
         if ($editForm->isValid()) {
             $em->persist($entityType);
@@ -205,7 +205,7 @@ class EntityTypeController extends DefaultController {
         $field = new Field();
         $field->setEntityType($entityType);
         $form = $this->createForm(new FieldType(), $field);
-        $form->bindRequest($this->getRequest());
+        $form->bind($this->getRequest());
 
         if ($form->isValid()) {
             $em->persist($field);
@@ -257,7 +257,7 @@ class EntityTypeController extends DefaultController {
 
         $etv = new EntityTypeVocabulary();
         $vocabularyForm = $this->createForm(new EntityTypeVocabularyType(), $etv);
-        $vocabularyForm->bindRequest($this->getRequest());
+        $vocabularyForm->bind($this->getRequest());
 
 
         if ($vocabularyForm->isValid()) {

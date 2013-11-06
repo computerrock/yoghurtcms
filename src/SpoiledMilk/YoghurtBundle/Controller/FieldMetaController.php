@@ -91,7 +91,7 @@ class FieldMetaController extends Controller {
         $entity = new FieldMeta();
         $entity->setField($field);
         $form = $this->createForm(new FieldMetaType(), $entity);
-        $form->bindRequest($this->getRequest());
+        $form->bind($this->getRequest());
 
         if ($form->isValid()) {
             $em->persist($entity);
@@ -145,7 +145,7 @@ class FieldMetaController extends Controller {
         }
 
         $editForm = $this->createForm(new FieldMetaType(), $fieldMeta);
-        $editForm->bindRequest($this->getRequest());
+        $editForm->bind($this->getRequest());
 
         if ($editForm->isValid()) {
             $em->persist($fieldMeta);
@@ -170,7 +170,7 @@ class FieldMetaController extends Controller {
         $form = $this->createDeleteForm($meta_id);
         $request = $this->getRequest();
 
-        $form->bindRequest($request);
+        $form->bind($request);
 
         if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();

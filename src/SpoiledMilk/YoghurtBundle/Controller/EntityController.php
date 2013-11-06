@@ -146,7 +146,7 @@ class EntityController extends DefaultController {
         $request = $this->getRequest();
         $rawData = $request->get($editForm->getName());
         $this->setTerms($entity, $rawData['vocabularyTerms']);
-        $editForm->bindRequest($request);
+        $editForm->bind($request);
 
         if ($editForm->isValid()) {
 
@@ -269,7 +269,7 @@ class EntityController extends DefaultController {
         $fieldValue->setEntity($entity);
         $fieldValue->setField($field);
         $form = $this->createForm(new Form\FieldValueType(), $fieldValue);
-        $form->bindRequest($this->getRequest());
+        $form->bind($this->getRequest());
 
         if ($form->isValid()) {
 

@@ -64,7 +64,7 @@ class VocabularyController extends DefaultController {
         $entity = new Vocabulary();
         $request = $this->getRequest();
         $form = $this->createForm(new VocabularyType(), $entity);
-        $form->bindRequest($request);
+        $form->bind($request);
 
         if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();
@@ -140,7 +140,7 @@ class VocabularyController extends DefaultController {
 
         $editForm = $this->createForm(new VocabularyType(), $entity);
         $request = $this->getRequest();
-        $editForm->bindRequest($request);
+        $editForm->bind($request);
 
         if ($editForm->isValid()) {
             $em->persist($entity);
@@ -189,7 +189,7 @@ class VocabularyController extends DefaultController {
         $form = $this->createDeleteForm($id);
         $request = $this->getRequest();
 
-        $form->bindRequest($request);
+        $form->bind($request);
 
         if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();
@@ -221,7 +221,7 @@ class VocabularyController extends DefaultController {
 
         $term = new Term();
         $termForm = $this->createForm(new TermType(), $term, array('vocabularyId' => $id));
-        $termForm->bindRequest($this->getRequest());
+        $termForm->bind($this->getRequest());
 
         if($termForm->isValid()) {
 
@@ -285,7 +285,7 @@ class VocabularyController extends DefaultController {
 
         $etv = new EntityTypeVocabulary();
         $etvForm = $this->createForm(new EntityTypeVocabularyType(), $etv);
-        $etvForm->bindRequest($this->getRequest());
+        $etvForm->bind($this->getRequest());
 
 
         if($etvForm->isValid()) {
