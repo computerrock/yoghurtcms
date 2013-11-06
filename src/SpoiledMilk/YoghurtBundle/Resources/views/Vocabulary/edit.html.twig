@@ -36,12 +36,12 @@
                         </a>
                     </li>
                     <br/>
-                    
+
                     <li>
-                        <form action="{{ path('yoghurt_vocabulary_delete', { 'id': entity.id }) }}" 
+                        <form action="{{ path('yoghurt_vocabulary_delete', { 'id': entity.id }) }}"
                               method="post">
                             {{ form_widget(delete_form) }}
-                            <button type="submit" 
+                            <button type="submit"
                                     class="btn btn-danger"
                                     onclick="return confirm('All terms from this Vocabulary will be remowed from Entities. Are you shure?');">
                                 Delete
@@ -61,7 +61,7 @@
                 {{ form_row(edit_form.name) }}
                 {{ form_row(edit_form.slug) }}
                 {{ form_row(edit_form._token) }}
-                
+
                 <div>
                     <h3>Entity types</h3>
                     {% if entity.entityTypeVocabularies|length > 0 %}
@@ -82,7 +82,7 @@
                                         </td>
                                         <td>{{ form_widget(edit_form.entityTypeVocabularies[key].mandatory) }}</td>
                                         <td>
-                                            <a href="{{ path('yoghurt_vocabulary_removeEntityType', {'vocabularyId': entity.id, 'etvId': etv.id}) }}" 
+                                            <a href="{{ path('yoghurt_vocabulary_removeEntityType', {'vocabularyId': entity.id, 'etvId': etv.id}) }}"
                                                class="btn btn-danger"
                                                onclick="return confirm('All terms from this Vocabulary will be remowed from Entities. Are you shure?');">
                                                 Remove
@@ -96,7 +96,7 @@
                         <p>No vocabulary is attached to this entity type</p>
                     {% endif %}
                 </div>
-                
+
                 <div>
                     <h3>Terms</h3>
                     {% if entity.terms|length > 0 %}
@@ -145,7 +145,10 @@
 </div>
 
 <div id="addTermModal" class="modal fade">
-    <form action="{{ path('yoghurt_vocabulary_addterm', {'id': entity.id}) }}" method="post">
+    <form action="{{ path('yoghurt_vocabulary_addterm', {'id': entity.id}) }}"
+          method="post"
+          novalidate="novalidate">
+        
         <div class="modal-header">
             <a class="close" data-dismiss="modal">×</a>
             <h3>Add term</h3>
@@ -160,18 +163,18 @@
         </div>
     </form>
 </div>
- 
+
 <div id="addToEntityTypeModal" class="modal fade">
-    <form action="{{ path('yoghurt_vocabulary_addEntityType', {'id': entity.id}) }}" 
+    <form action="{{ path('yoghurt_vocabulary_addEntityType', {'id': entity.id}) }}"
           method="post"
           class="form-horizontal"
           novalidate="novalidate">
-        
+
         <div class="modal-header">
             <a class="close" data-dismiss="modal">×</a>
             <h3>Add vocabulary</h3>
         </div>
-        
+
         <div class="modal-body">
             {{ form_row(etv_form.entityType) }}
             {{ form_row(etv_form.mandatory) }}
@@ -179,9 +182,9 @@
             <div class="hidden">
                 {{ form_row(etv_form.vocabulary) }}
             </div>
-                
+
         </div>
-        
+
         <div class="modal-footer">
             <button type="submit" class="btn btn-primary">Create</button>
         </div>

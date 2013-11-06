@@ -20,4 +20,22 @@ class TermRepository extends EntityRepository {
         return $qb->getQuery()->getResult();
     }
 
+    /**
+     * Generates a slug for the given title. First, it sluggifies the title, then
+     * if the slug is already in use by some other entity, it adds a number to
+     * the generated value.
+     *
+     * @param string $entityTitle
+     * @return string
+     */
+    public function generateSlug($entityTitle) {
+        $slug = \SpoiledMilk\YoghurtBundle\Services\UtilityService::slugify($entityTitle);
+        $dql = 'select t from SpoiledMilkYoghurtBundle:Term t where t.slug = :slug';
+        $query = $this->_em
+                ->createQuery($dql)
+                ->setParameter('slug', $slug);
+        $count = sizeof($query->getResult());
+        return $slug . ($count ? '-' . ++$count : '');
+    }
+
 }

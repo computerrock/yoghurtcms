@@ -33,4 +33,23 @@ class DefaultController extends Controller {
         return $errors;
     }
 
+    public function getAllErrors(\Symfony\Component\Form\Form $form) {
+        $errors = array();
+        $formErrors = $this->getFormErrors($form);
+
+        if ($formErrors) {
+            $errors['form'] = $formErrors;
+        }
+
+        foreach ($form->all() as $child) {
+            $childErrors = $this->getFormErrors($child);
+
+            if ($childErrors) {
+                $errors[ucfirst($child->getName())] = $childErrors;
+            }
+        }
+
+        return $errors;
+    }
+
 }

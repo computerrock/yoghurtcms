@@ -32,7 +32,6 @@ class Term {
     /**
      * @var string
      * @ORM\Column(type="string", length=255)
-     * @Assert\NotBlank()
      */
     private $slug;
 
@@ -154,20 +153,20 @@ class Term {
 
         return  '-' . $this->parent->getIndentedTerm($term);
     }
-    
+
     /**
      * Returns ID of this term, and IDs of all terms that have this term as an
      * ancesstor. Rreturns all ID in this term's tree.
-     * 
+     *
      * @return array
      */
     public function getTermTreeIds() {
         $ret = array($this->id);
-        
+
         foreach ($this->children as $child) {
             $ret = array_merge($ret, $child->getTermTreeIds());
         }
-        
+
         return $ret;
     }
 

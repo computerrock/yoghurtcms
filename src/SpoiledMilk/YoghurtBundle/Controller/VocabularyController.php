@@ -102,9 +102,9 @@ class VocabularyController extends DefaultController {
         $editForm = $this->createForm(new VocabularyType(), $entity);
         $deleteForm = $this->createDeleteForm($id);
         $etvForm = $this->createForm(
-                new EntityTypeVocabularyType(), 
+                new EntityTypeVocabularyType(),
                 new EntityTypeVocabulary(null, $entity));
-        
+
         $terms = array();
         foreach ($entity->getTerms() as $term) {
             if(!$term->getParent()) {
@@ -149,20 +149,20 @@ class VocabularyController extends DefaultController {
             $request->getSession()->getFlashBag()->add('success', 'Changes successfully saved.');
             return $this->redirect($this->generateUrl('yoghurt_vocabulary_edit', array('id' => $id)));
         }
-        
+
         $deleteForm = $this->createDeleteForm($id);
         $termForm = $this->createForm(new TermType(), new Term(), array('vocabularyId' => $id));
         $etvForm = $this->createForm(
-                new EntityTypeVocabularyType(), 
+                new EntityTypeVocabularyType(),
                 new EntityTypeVocabulary(null, $entity));
-        
+
         $terms = array();
         foreach ($entity->getTerms() as $term) {
             if(!$term->getParent()) {
                 $this->addTermAndChildren($terms, $term);
             }
         }
-        
+
         $request->getSession()->getFlashBag()->add('error', 'The form contains errors.');
         $errors = $this->getFormErrors($editForm);
         for($i = 0; $i < sizeof($errors); $i++) {
@@ -224,12 +224,25 @@ class VocabularyController extends DefaultController {
         $termForm->bindRequest($this->getRequest());
 
         if($termForm->isValid()) {
+
+            if (!$term->getSlug()) {
+                $slug = $em->getRepository('SpoiledMilkYoghurtBundle:Term')
+                        ->generateSlug($term->getTerm());
+                $term->setSlug($slug);
+            }
+
             $term->setVocabulary($vocabulary);
             $em->persist($term);
             $em->flush();
             $this->getRequest()->getSession()->getFlashBag()->add('success', 'Term successfully added.');
         } else {
             $this->getRequest()->getSession()->getFlashBag()->add('error', 'The form contained errors. Term was not added.');
+            $errors = $this->getAllErrors($termForm);
+
+            foreach ($errors as $key => $error) {
+                $flatErros = implode('<br/>', $error);
+                $this->getRequest()->getSession()->getFlashBag()->add('error', "<strong>$key:</strong> $flatErros");
+            }
         }
 
         return $this->redirect($this->generateUrl('yoghurt_vocabulary_edit', array('id' => $id)));
@@ -257,7 +270,7 @@ class VocabularyController extends DefaultController {
         $this->getRequest()->getSession()->getFlashBag()->add('success', 'Term successfully deleted.');
         return $this->redirect($this->generateUrl('yoghurt_vocabulary_edit', array('id' => $vocabularyId)));
     }
-    
+
     /**
      * @Route("/{id}/vocabulary/add", name="yoghurt_vocabulary_addEntityType")
      * @Method("post")
@@ -269,12 +282,12 @@ class VocabularyController extends DefaultController {
         if (!$vocabulary) {
             throw $this->createNotFoundException('Vocabulary not found!');
         }
-        
+
         $etv = new EntityTypeVocabulary();
         $etvForm = $this->createForm(new EntityTypeVocabularyType(), $etv);
         $etvForm->bindRequest($this->getRequest());
-        
-        
+
+
         if($etvForm->isValid()) {
             $em->persist($etv);
             $em->flush();
@@ -282,37 +295,37 @@ class VocabularyController extends DefaultController {
         } else {
             $this->getRequest()->getSession()->getFlashBag()->add('error', 'The form contained errors. Entity type was not added.');
             $errors = $this->getFormErrors($etvForm);
-            
+
             for($i = 0; $i < sizeof($errors); $i++) {
                 $this->getRequest()->getSession()->getFlashBag()->add("error $i", $errors[$i]);
             }
         }
-        
+
         return $this->redirect($this->generateUrl('yoghurt_vocabulary_edit', array('id' => $id)));
     }
-    
+
     /**
-     * @Route("/{vocabularyId}/entityType/remove/{etvId}", name="yoghurt_vocabulary_removeEntityType") 
+     * @Route("/{vocabularyId}/entityType/remove/{etvId}", name="yoghurt_vocabulary_removeEntityType")
      */
     public function removeEntityTypeAction($vocabularyId, $etvId) {
         $em = $this->getDoctrine()->getManager();
-        
+
         $vocabulary = $em->getRepository('SpoiledMilkYoghurtBundle:Vocabulary')->find($vocabularyId);
 
         if (!$vocabulary) {
             throw $this->createNotFoundException('Vocabulary not found!');
         }
-        
+
         $etv = $em->getRepository('SpoiledMilkYoghurtBundle:EntityTypeVocabulary')->find($etvId);
-        
+
         if (!$etv) {
             throw $this->createNotFoundException('Entity type not found!');
         }
-        
+
         // Remove all the selected Vocabulary's terms from Entities of the selected Type
         $entities = $em->getRepository('SpoiledMilkYoghurtBundle:Entity')
                 ->fetchByType($etv->getEntityType());
-        
+
         foreach ($entities as $entity) {
             foreach ($entity->getTerms() as $term) {
                 if($term->getVocabulary()->getId() == $vocabularyId) {
@@ -321,10 +334,10 @@ class VocabularyController extends DefaultController {
                 }
             }
         }
-        
+
         $em->remove($etv);
         $em->flush();
-        
+
         return $this->redirect($this->generateUrl('yoghurt_vocabulary_edit', array(
             'id' => $vocabularyId
         )));

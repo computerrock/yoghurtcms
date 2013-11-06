@@ -18,17 +18,17 @@
         <!--[if lt IE 9]>
             <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
         <![endif]-->
-    
+
         <script src="{{ asset('bundles/spoiledmilkyoghurt/js/jquery-1.7.2.min.js') }}"></script>
         <script src="{{ asset('bundles/spoiledmilkyoghurt/js/bootstrap.min.js') }}"></script>
         <script src="{{ asset('bundles/spoiledmilkyoghurt/js/jquery-ui-1.8.20.custom.min.js') }}"></script>
         <script src="{{ asset('bundles/spoiledmilkyoghurt/js/jquery-ui-timepicker-addon.js') }}"></script>
-        
+
         {% block headscript %}{% endblock %}
     </head>
-    
+
     <body>
-        
+
         {{ render(controller('SpoiledMilkYoghurtBundle:Helper:topMenu')) }}
 
         <div class="container-fluid">
@@ -37,27 +37,27 @@
                     {% for flash in flashes %}
                         <div class="alert alert-{{key}}">
                             <a class="close" data-dismiss="alert">×</a>
-                            {{ flash }}{% if not loop.last %}<br/>{% endif %}
+                            {{ flash | raw }}{% if not loop.last %}<br/>{% endif %}
                         </div>
                     {% endfor %}
                 </div>
             {% endfor %}
-            
+
             <div class="row-fluid">
                 <div class="span2">
                     {% if is_granted('ROLE_USER') %}
                         {{ render(controller('SpoiledMilkYoghurtBundle:Helper:leftMenu', {'requestUrl':app.request.uri})) }}
                     {% endif %}
                 </div>
-                    
+
                 <div class="span10">
                     {% block content %}
                     {% endblock %}
                 </div>
             </div>
         </div>
-        
-        
+
+
     </body>
 
 </html>
