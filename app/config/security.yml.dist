@@ -37,5 +37,9 @@ security:
         - { path: ^/admin/entitytype/show, roles: ROLE_USER }
         - { path: ^/admin/entitytype, roles: ROLE_ADMIN }
         - { path: ^/admin/user, roles: ROLE_ADMIN }
+        - { path: ^/admin/vocabulary/$, roles: ROLE_USER }
+        - { path: "^/admin/vocabulary/\d{1,}/(edit|addterm)$", roles: ROLE_USER }
+        - { path: "^/admin/vocabulary/\d{1,}/removeterm/\d{1,}$", roles: ROLE_USER }
+        - { path: ^/admin/vocabulary, roles: ROLE_ADMIN }
         - { path: ^/, roles: ROLE_USER }
         #- { path: ^/_internal, roles: IS_AUTHENTICATED_ANONYMOUSLY, ip: 127.0.0.1 }
