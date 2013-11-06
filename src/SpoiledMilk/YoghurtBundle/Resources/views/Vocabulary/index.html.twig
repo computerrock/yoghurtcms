@@ -8,14 +8,16 @@
 <div class="page-header">
     <h1>
         Vocabulary list
-    
-        <a href="#newVocabularyModal" 
-           data-toggle="modal" 
-           class="btn btn-primary"
-           style="margin-left: 15px">
-            <i class="icon-plus icon-white"></i>
-            Create new
-        </a>
+
+        {% if is_granted('ROLE_ADMIN') %}
+            <a href="#newVocabularyModal"
+               data-toggle="modal"
+               class="btn btn-primary"
+               style="margin-left: 15px">
+                <i class="icon-plus icon-white"></i>
+                Create new
+            </a>
+        {% endif %}
     </h1>
 </div>
 
@@ -56,13 +58,13 @@
             <a class="close" data-dismiss="modal">×</a>
             <h3>New Vocabulary</h3>
         </div>
-        
+
         <div class="modal-body">
             {{ form_row(formNew.name) }}
             {{ form_row(formNew.slug) }}
             {{ form_row(formNew._token) }}
         </div>
-        
+
         <div class="modal-footer">
             <button type="submit" class="btn btn-primary">Create</button>
         </div>

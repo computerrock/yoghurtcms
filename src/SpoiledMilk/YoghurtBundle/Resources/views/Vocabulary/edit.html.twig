@@ -28,78 +28,41 @@
                             Add term
                         </a>
                     </li>
-                    <li>
-                        <a href="#addToEntityTypeModal"
-                           data-toggle="modal">
-                            <i class="icon-plus"></i>
-                            Add Entity Type
-                        </a>
-                    </li>
-                    <br/>
-
-                    <li>
-                        <form action="{{ path('yoghurt_vocabulary_delete', { 'id': entity.id }) }}"
-                              method="post">
-                            {{ form_widget(delete_form) }}
-                            <button type="submit"
-                                    class="btn btn-danger"
-                                    onclick="return confirm('All terms from this Vocabulary will be remowed from Entities. Are you shure?');">
-                                Delete
-                            </button>
-                        </form>
-                    </li>
                 </ul>
             </div>
         </div>
 
         <div class="span9">
-            <form action="{{ path('yoghurt_vocabulary_update', { 'id': entity.id }) }}"
-                method="post"
-                novalidate="novalidate"
-                {{ form_enctype(edit_form) }}>
+            <div>
+                <h3 style="display: inline-block; margin-right: 12px">Name:</h3>{{ entity.name }}<br/>
+                <h3 style="display: inline-block; margin-right: 12px">Slug:</h3>{{ entity.slug }}
+            </div>
 
-                {{ form_row(edit_form.name) }}
-                {{ form_row(edit_form.slug) }}
-                {{ form_row(edit_form._token) }}
+            <div style="margin-top: 40px">
+                <h3>Entity types</h3>
+                {% if entity.entityTypeVocabularies|length > 0 %}
+                    <table class="table">
+                        <thead>
+                            <th>Entity type</th>
+                            <th>Mandatory use</th>
+                        </thead>
+                        <tbody>
+                            {% for etv in entity.entityTypeVocabularies %}
+                                <tr>
+                                    <td>{{ etv.entityType.name }}</td>
+                                    <td>{% if etv.mandatory %}Yes{% else %}No{% endif %}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <p>This vocabulary is not used anywhere</p>
+                {% endif %}
+            </div>
 
-                <div>
-                    <h3>Entity types</h3>
-                    {% if entity.entityTypeVocabularies|length > 0 %}
-                        <table class="table">
-                            <thead>
-                                <th>Entity type</th>
-                                <th>Mandatory use</th>
-                                <th>&nbsp;</th>
-                            </thead>
-                            <tbody>
-                                {% for key, etv in entity.entityTypeVocabularies %}
-                                    <tr>
-                                        <td>
-                                            {{ form_widget(edit_form.entityTypeVocabularies[key].entityType) }}
-                                            <span class="hidden">
-                                                {{ form_widget(edit_form.entityTypeVocabularies[key].vocabulary) }}
-                                            </span>
-                                        </td>
-                                        <td>{{ form_widget(edit_form.entityTypeVocabularies[key].mandatory) }}</td>
-                                        <td>
-                                            <a href="{{ path('yoghurt_vocabulary_removeEntityType', {'vocabularyId': entity.id, 'etvId': etv.id}) }}"
-                                               class="btn btn-danger"
-                                               onclick="return confirm('All terms from this Vocabulary will be remowed from Entities. Are you shure?');">
-                                                Remove
-                                            </a>
-                                        </td>
-                                    </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    {% else %}
-                        <p>No vocabulary is attached to this entity type</p>
-                    {% endif %}
-                </div>
-
-                <div>
-                    <h3>Terms</h3>
-                    {% if entity.terms|length > 0 %}
+            <div style="margin-top: 40px">
+                <h3>Terms</h3>
+                {% if entity.terms|length > 0 %}
                     <table class="table">
                         <thead>
                             <th>Term</th>
@@ -128,17 +91,12 @@
                             {% endfor %}
                         </tbody>
                     </table>
-                    {% else %}
-                    <div class="alert-block">
-                        This vocabulary doesn't have any terms.
-                    </div>
-                    {% endif %}
+                {% else %}
+                <div class="alert-block">
+                    This vocabulary doesn't have any terms.
                 </div>
-
-                <div class="form-actions">
-                    <button type="submit" class="btn">Save</button>
-                </div>
-            </form>
+                {% endif %}
+            </div>
         </div>
 
     </div>
@@ -148,7 +106,7 @@
     <form action="{{ path('yoghurt_vocabulary_addterm', {'id': entity.id}) }}"
           method="post"
           novalidate="novalidate">
-        
+
         <div class="modal-header">
             <a class="close" data-dismiss="modal">×</a>
             <h3>Add term</h3>
@@ -164,30 +122,4 @@
     </form>
 </div>
 
-<div id="addToEntityTypeModal" class="modal fade">
-    <form action="{{ path('yoghurt_vocabulary_addEntityType', {'id': entity.id}) }}"
-          method="post"
-          class="form-horizontal"
-          novalidate="novalidate">
-
-        <div class="modal-header">
-            <a class="close" data-dismiss="modal">×</a>
-            <h3>Add vocabulary</h3>
-        </div>
-
-        <div class="modal-body">
-            {{ form_row(etv_form.entityType) }}
-            {{ form_row(etv_form.mandatory) }}
-            {{ form_row(etv_form._token) }}
-            <div class="hidden">
-                {{ form_row(etv_form.vocabulary) }}
-            </div>
-
-        </div>
-
-        <div class="modal-footer">
-            <button type="submit" class="btn btn-primary">Create</button>
-        </div>
-    </form>
-</div>
 {% endblock %}

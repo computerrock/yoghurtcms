@@ -1,11 +1,11 @@
 <ul class="nav nav-pills nav-stacked">
-    
+
     <li class="{% if activeIndex == 'publishing' %}active{% endif %}">
         <a href="{{ path('yoghurt_index') }}">Publishing</a>
     </li>
 
     <li class="nav-header" style="font-size: 105%">content</li>
-    
+
     {% for entityType in entityTypes %}
         <li class="dropdown {% if entityType.id ~ '' == activeIndex %}active{% endif %}">
             <a class="dropdown-toggle" href="#" data-toggle="dropdown">
@@ -25,23 +25,29 @@
         </li>
     {% endfor %}
 
-    <li class="dropdown {% if activeIndex == 'vocabulary' %}active{% endif %}">
-        <a class="dropdown-toggle" href="#" data-toggle="dropdown">
-            Vocabularies
-            <b class="caret"></b>
-        </a>
-            
-        <ul class="dropdown-menu">
-            <li>
-                <a href="{{ path('yoghurt_vocabulary') }}">Show all</a>
-            </li>
+    {% if is_granted('ROLE_ADMIN') %}
+        <li class="dropdown {% if activeIndex == 'vocabulary' %}active{% endif %}">
+            <a class="dropdown-toggle" href="#" data-toggle="dropdown">
+                Vocabularies
+                <b class="caret"></b>
+            </a>
 
-            <li>
-                <a href="{{ path('yoghurt_vocabulary_new') }}">Add new</a>
-            </li>
-        </ul>
-    </li>
-    
+            <ul class="dropdown-menu">
+                <li>
+                    <a href="{{ path('yoghurt_vocabulary') }}">Show all</a>
+                </li>
+
+                <li>
+                    <a href="{{ path('yoghurt_vocabulary_new') }}">Add new</a>
+                </li>
+            </ul>
+        </li>
+    {% else %}
+        <li class="{% if activeIndex == 'vocabulary' %}active{% endif %}">
+            <a href="{{ path('yoghurt_vocabulary') }}">Vocabularies</a>
+        </li>
+    {% endif %}
+
     <li class="nav-header" style="font-size: 105%">administration</li>
     <li>
         <a href="{{ path('yoghurt_index_deleteunusedfiles') }}">
@@ -51,12 +57,12 @@
     </li>
 
     {% if is_granted('ROLE_ADMIN') %}
-        
+
         <li class="{% if activeIndex == 'entityType' %}active{% endif %}">
             <a href="{{ path('yoghurt_entitytype') }}"><i class="icon-wrench {% if activeIndex == 'entityType' %}icon-white{% endif %}"></i> Entity types
             </a>
         </li>
-        
+
         <li class="{% if activeIndex == 'user' %}active{% endif %}">
             <a href="{{ path('yoghurt_user') }}"><i class="icon-user {% if activeIndex == 'user' %}icon-white{% endif %}"></i> Users
             </a>

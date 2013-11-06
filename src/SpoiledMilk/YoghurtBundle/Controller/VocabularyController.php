@@ -2,16 +2,16 @@
 
 namespace SpoiledMilk\YoghurtBundle\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use SpoiledMilk\YoghurtBundle\Entity\Vocabulary;
-use SpoiledMilk\YoghurtBundle\Form\VocabularyType;
-use SpoiledMilk\YoghurtBundle\Form\TermType;
-use SpoiledMilk\YoghurtBundle\Entity\Term;
-use SpoiledMilk\YoghurtBundle\Form\EntityTypeVocabularyType;
 use SpoiledMilk\YoghurtBundle\Entity\EntityTypeVocabulary;
+use SpoiledMilk\YoghurtBundle\Entity\Term;
+use SpoiledMilk\YoghurtBundle\Entity\Vocabulary;
+use SpoiledMilk\YoghurtBundle\Form\EntityTypeVocabularyType;
+use SpoiledMilk\YoghurtBundle\Form\TermType;
+use SpoiledMilk\YoghurtBundle\Form\VocabularyType;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 /**
  * Vocabulary controller.
@@ -44,6 +44,11 @@ class VocabularyController extends DefaultController {
      * @Template()
      */
     public function newAction() {
+
+        if (!$this->isAdmin()) {
+            throw new AccessDeniedHttpException(gettext('You don\'t have permission to execute this operation'));
+        }
+
         $entity = new Vocabulary();
         $form = $this->createForm(new VocabularyType(), $entity);
 
@@ -61,6 +66,11 @@ class VocabularyController extends DefaultController {
      * @Template("SpoiledMilkYoghurtBundle:Vocabulary:new.html.twig")
      */
     public function createAction() {
+
+        if (!$this->isAdmin()) {
+            throw new AccessDeniedHttpException(gettext('You don\'t have permission to execute this operation'));
+        }
+        
         $entity = new Vocabulary();
         $request = $this->getRequest();
         $form = $this->createForm(new VocabularyType(), $entity);
@@ -91,7 +101,6 @@ class VocabularyController extends DefaultController {
      */
     public function editAction($id) {
         $em = $this->getDoctrine()->getManager();
-
         $entity = $em->getRepository('SpoiledMilkYoghurtBundle:Vocabulary')->find($id);
 
         if (!$entity) {
@@ -104,15 +113,15 @@ class VocabularyController extends DefaultController {
         $etvForm = $this->createForm(
                 new EntityTypeVocabularyType(),
                 new EntityTypeVocabulary(null, $entity));
-
         $terms = array();
+
         foreach ($entity->getTerms() as $term) {
             if(!$term->getParent()) {
                 $this->addTermAndChildren($terms, $term);
             }
         }
 
-        return array(
+        $viewParams = array(
             'entity' => $entity,
             'edit_form' => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
@@ -120,6 +129,12 @@ class VocabularyController extends DefaultController {
             'terms' => $terms,
             'etv_form' => $etvForm->createView(),
         );
+
+        if($this->isAdmin()) {
+            return $this->render('SpoiledMilkYoghurtBundle:Vocabulary:edit_admin.html.twig', $viewParams);
+        } else {
+            return $viewParams;
+        }
     }
 
     /**
@@ -130,8 +145,12 @@ class VocabularyController extends DefaultController {
      * @Template("SpoiledMilkYoghurtBundle:Vocabulary:edit.html.twig")
      */
     public function updateAction($id) {
-        $em = $this->getDoctrine()->getManager();
 
+        if (!$this->isAdmin()) {
+            throw new AccessDeniedHttpException(gettext('You don\'t have permission to execute this operation'));
+        }
+
+        $em = $this->getDoctrine()->getManager();
         $entity = $em->getRepository('SpoiledMilkYoghurtBundle:Vocabulary')->find($id);
 
         if (!$entity) {
@@ -186,9 +205,13 @@ class VocabularyController extends DefaultController {
      * @Method("post")
      */
     public function deleteAction($id) {
+
+        if (!$this->isAdmin()) {
+            throw new AccessDeniedHttpException(gettext('You don\'t have permission to execute this operation'));
+        }
+
         $form = $this->createDeleteForm($id);
         $request = $this->getRequest();
-
         $form->bind($request);
 
         if ($form->isValid()) {
@@ -276,6 +299,11 @@ class VocabularyController extends DefaultController {
      * @Method("post")
      */
     public function addEntityTypeAction($id) {
+
+        if (!$this->isAdmin()) {
+            throw new AccessDeniedHttpException(gettext('You don\'t have permission to execute this operation'));
+        }
+
         $em = $this->getDoctrine()->getManager();
         $vocabulary = $em->getRepository('SpoiledMilkYoghurtBundle:Vocabulary')->find($id);
 
@@ -308,8 +336,12 @@ class VocabularyController extends DefaultController {
      * @Route("/{vocabularyId}/entityType/remove/{etvId}", name="yoghurt_vocabulary_removeEntityType")
      */
     public function removeEntityTypeAction($vocabularyId, $etvId) {
-        $em = $this->getDoctrine()->getManager();
 
+        if (!$this->isAdmin()) {
+            throw new AccessDeniedHttpException(gettext('You don\'t have permission to execute this operation'));
+        }
+
+        $em = $this->getDoctrine()->getManager();
         $vocabulary = $em->getRepository('SpoiledMilkYoghurtBundle:Vocabulary')->find($vocabularyId);
 
         if (!$vocabulary) {

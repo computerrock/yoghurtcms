@@ -52,4 +52,19 @@ class DefaultController extends Controller {
         return $errors;
     }
 
+    /**
+     * Checks weather the current user has ROLE_ADMIN
+     *
+     * @return boolean
+     */
+    public function isAdmin() {
+        $user = $this->getUser();
+
+        if (!$user) {
+            return false;
+        }
+
+        return in_array('ROLE_ADMIN', $user->getRoles());
+    }
+
 }
