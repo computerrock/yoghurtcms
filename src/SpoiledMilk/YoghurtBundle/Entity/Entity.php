@@ -19,7 +19,7 @@ use Symfony\Component\Validator\ExecutionContext;
  * @Assert\Callback(methods={"validate"})
  */
 class Entity {
-    
+
     const STATUS_DISABLED = 0;
     const STATUS_ENABLED = 1;
     const STATUS_TEST = 2;
@@ -39,7 +39,7 @@ class Entity {
      * @Assert\NotBlank
      */
     private $title;
-    
+
     /**
      * @var string $slug *
      * @ORM\Column(type="string", length=255, nullable=true)
@@ -52,13 +52,13 @@ class Entity {
      * @ORM\Column(type="integer", nullable=false)
      */
     private $position;
-    
+
     /**
      * @var DateTime
      * @ORM\Column(type="datetime")
      */
     private $modified;
-    
+
     /**
      * @var integer
      * @ORM\Column(type="integer")
@@ -97,7 +97,7 @@ class Entity {
     public function setId($id) {
         $this->id = $id;
     }
-    
+
     public function getTitle() {
         return $this->title;
     }
@@ -121,7 +121,7 @@ class Entity {
     public function setPosition($position) {
         $this->position = $position;
     }
-    
+
     public function getModified() {
         return $this->modified;
     }
@@ -129,7 +129,7 @@ class Entity {
     public function setModified($modified) {
         $this->modified = $modified;
     }
-    
+
     public function getStatus() {
         return $this->status;
     }
@@ -158,19 +158,45 @@ class Entity {
         $this->fieldValues->add($val);
         $val->setEntity($this);
     }
-    
+
     public function countFieldValues() {
         return $this->fieldValues->count();
     }
-    
+
     public function getFieldValue($name) {
         foreach ($this->fieldValues as $value) {
             if ($value->getField()->getName() == $name) {
                 return $value;
             }
         }
-        
+
         return null;
+    }
+
+    /**
+     * Returns an array of FieldValues that are stored as a repeating field in
+     * this Entity. Throws a LogicException uf the requested field is not marked
+     * as repeating
+     *
+     * @param string $name Name of the field
+     * @return array Array of FieldValue instances
+     * @throws \LogicException If the requested field is not marked as repeating
+     */
+    public function getRepeatingFieldValues($name) {
+        $ret = array();
+
+        foreach ($this->fieldValues as $value) {
+            if ($value->getField()->getName() == $name) {
+
+                if (!$value->getField()->getRepeating()) {
+                    throw new \LogicException("The field $name is not a repeating field!");
+                }
+
+                $ret[] = $value;
+            }
+        }
+
+        return $ret;
     }
 
     public function getTerms() {
@@ -184,20 +210,20 @@ class Entity {
     public function addTerm(\SpoiledMilk\YoghurtBundle\Entity\Term $term) {
         $this->terms->add($term);
     }
-    
+
     public function removeTerm(\SpoiledMilk\YoghurtBundle\Entity\Term $term) {
         $this->terms->removeElement($term);
     }
 
     /**
-     * @ORM\PrePersist 
+     * @ORM\PrePersist
      * @ORM\PreUpdate
      */
     public function prePersist() {
         if (!$this->position) {
             $this->position = $this->entityType->getMaxEntityPosition() + 1;
         }
-        
+
         $this->modified = new \DateTime();
     }
 
