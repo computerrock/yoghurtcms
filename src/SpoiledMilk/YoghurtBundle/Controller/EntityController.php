@@ -390,6 +390,8 @@ class EntityController extends DefaultController {
      * @param \SpoiledMilk\YoghurtBundle\Entity\Entity $entity
      */
     private function addFieldValues($entity) {
+      
+        $yoghurtService = $this->get('yoghurt_service');
 
         foreach ($entity->getEntityType()->getFields() as $field) {
             $exists = false;
@@ -417,28 +419,13 @@ class EntityController extends DefaultController {
                 $fieldValue->setPosition(1000 * $field->getPosition() + $entity->countFieldValues() + 1);
 
                 if ($fieldValue instanceof Entity\FileValue)
-                    $this->checkPrefix($fieldValue);
+                    $yoghurtService->checkPrefix($fieldValue);
 
                 $entity->addFieldValue($fieldValue);
             }
         }
     }
 
-    /**
-     * Adds the set prefix to the name of the uploaded file
-     *
-     * @param \SpoiledMilk\YoghurtBundle\Entity\FileValue $fileValue
-     */
-    private function checkPrefix(Entity\FileValue $fileValue) {
-        $fieldMeta = $fileValue->getField()->getFieldMeta();
-
-        foreach ($fieldMeta as $fm) {
-            if ($fm->getMetaKey() == 'prefix') {
-                $fileValue->setPrefix($fm->getMetaValue());
-                break;
-            }
-        }
-    }
 
     /**
      * Returns a matrix of the following structure:

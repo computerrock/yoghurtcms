@@ -416,6 +416,7 @@ class EntityTypeController extends DefaultController {
      */
     private function addFieldToEntities(Field $field, EntityType $entityType) {
         $em = $this->getDoctrine()->getManager();
+        $yoghurtService = $this->get('yoghurt_service');
         
         foreach ($entityType->getEntities() as $entity) {
             $className = 'SpoiledMilk\YoghurtBundle\Entity\\' . $field->getFieldType()->getClassName();
@@ -426,7 +427,7 @@ class EntityTypeController extends DefaultController {
             $fieldValue->setPosition(1000 * $field->getPosition() + $entity->countFieldValues() + 1);
 
             if ($fieldValue instanceof Entity\FileValue)
-                $this->checkPrefix($fieldValue);
+                $yoghurtService->checkPrefix($fieldValue);
 
             $entity->addFieldValue($fieldValue);
             $em->persist($fieldValue);
