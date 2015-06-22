@@ -1,6 +1,7 @@
 <?php
 
 namespace SpoiledMilk\YoghurtBundle\Services;
+use SpoiledMilk\YoghurtBundle\Entity as Entity;
 
 class YoghurtService {
 
@@ -91,6 +92,22 @@ class YoghurtService {
         }
         
         return count($unusedFiles);
+    }
+    
+    /**
+     * Adds the set prefix to the name of the uploaded file
+     *
+     * @param \SpoiledMilk\YoghurtBundle\Entity\FileValue $fileValue
+     */
+    public function checkPrefix(Entity\FileValue $fileValue) {
+        $fieldMeta = $fileValue->getField()->getFieldMeta();
+
+        foreach ($fieldMeta as $fm) {
+            if ($fm->getMetaKey() == 'prefix') {
+                $fileValue->setPrefix($fm->getMetaValue());
+                break;
+            }
+        }
     }
 
 }
