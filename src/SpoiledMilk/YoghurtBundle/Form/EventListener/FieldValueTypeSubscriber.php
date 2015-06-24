@@ -194,6 +194,9 @@ class FieldValueTypeSubscriber implements EventSubscriberInterface {
                 case 'trim':
                     $ret['trim'] = ($fm->getMetaValue() == '0' || $fm->getMetaValue() == 'false' ? false : true);
                     break;
+                case 'class':
+                    $ret['attr']['class'] = $fm->getMetaValue();
+                    break;
             }
         }
 
